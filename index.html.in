@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>WebGPU Emscripten Test</title>
+    <title>WebGPU Starter</title>
 </head>
 <body>
     <!-- The canvas to display our renderer output on -->
