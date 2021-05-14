@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebGPU Emscripten Test</title>
+</head>
+<body>
+    <!-- The canvas to display our renderer output on -->
+    <canvas id="webgpu-canvas" width="640" height="480"></canvas>
+
+    <script>
+        var Module;
+        (async () => {
+            if (!navigator.gpu) {
+                alert("WebGPU is not supported/enabled in your browser");
+                return;
+            }
+
+            Module = {};
+            // Get a GPU device to render with
+            var adapter = await navigator.gpu.requestAdapter();
+            var device = await adapter.requestDevice();
+            Module.preinitializedWebGPUDevice = device;
+
+            var appjs = document.createElement("script");
+            appjs.async = true;
+            appjs.src = "@APP_TARGET_NAME@.js"
+            document.body.appendChild(appjs);
+        })();
+    </script>
+</body>
+</html>
