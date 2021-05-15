@@ -25,12 +25,14 @@ python3 -m http.server
 # navigate to localhost:8000 to see the triangle!
 ```
 
-## Building for Native with Dawn (D3D12/Windows Only for Now)
+## Building for Native with Dawn
 
 The application uses [Dawn](https://dawn.googlesource.com/dawn/) to provide an
 implementation of WebGPU for native platforms. Carl Woffenden has a good
 [guide](https://github.com/cwoffenden/hello-webgpu/blob/master/lib/README.md)
 about building Dawn which you can follow to build Dawn.
+**Note: right now this builds against Dawn at tag:** `origin/chromium/4505`.
+
 You can then build a native application with CMake, passing the location
 where you build Dawn and the VulkanSDK (required to compile shaders to SPV).
 SDL2 is also required to provide cross-platform windowing support, on Windows
@@ -45,9 +47,11 @@ cmake .. -DVULKAN_SDK=<path to root of VulkanSDK> `
 cmake --build .
 ```
 
-Copy over the dll's in Dawn's build directory and you can then run the native app:
+If on Windows copy over the dll's in Dawn's build directory,
+and you can then run the native app. On Mac or Linux, the dylibs/sos
+just need to be in the path of the executable
 
 ```
-./<build config>/wgpu-starter.exe
+./<build config>/wgpu-starter
 ```
 

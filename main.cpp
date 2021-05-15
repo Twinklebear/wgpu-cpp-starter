@@ -1,23 +1,30 @@
 #include <array>
 #include <chrono>
+#include <cstdint>
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <thread>
 #include <vector>
+
 #ifdef __EMSCRIPTEN__
 #include <emscripten/html5_webgpu.h>
 #include <webgpu/webgpu_cpp.h>
 #else
-#include <SDL.h>
-#include <SDL_syswm.h>
 #include <dawn/dawn_proc.h>
 #include <dawn/webgpu_cpp.h>
+
+// Note: include order does matter on Linux
+#include <SDL.h>
+#include <SDL_syswm.h>
 
 #if defined(_WIN32)
 #include <dawn_native/D3D12Backend.h>
 #elif defined(__APPLE__)
 #include <dawn_native/MetalBackend.h>
 #include "metal_util.h"
+#else
+#include <dawn_native/VulkanBackend.h>
 #endif
 
 #endif
@@ -25,7 +32,6 @@
 #include "spv_shaders_embedded_spv.h"
 
 #ifndef __EMSCRIPTEN__
-// TODO: Vulkan for Linux, Metal for MacOS
 dawn_native::Adapter request_adapter(dawn_native::Instance &instance,
                                      const wgpu::BackendType backend_type)
 {
@@ -57,7 +63,7 @@ int main(int argc, const char **argv)
 #elif defined(__APPLE__)
     const auto backend_type = wgpu::BackendType::Metal;
 #else
-    // TODO linux
+    const auto backend_type = wgpu::BackendType::Vulkan;
 #endif
 
     auto adapter = request_adapter(dawn_instance, backend_type);
@@ -101,7 +107,16 @@ int main(int argc, const char **argv)
     auto context = metal::make_context(window);
     wgpu::SurfaceDescriptorFromMetalLayer native_surf = metal::surface_descriptor(context);
 #else
-#error "Linux TODO"
+    SDL_SysWMinfo wm_info;
+    SDL_VERSION(&wm_info.version);
+    SDL_GetWindowWMInfo(window, &wm_info);
+
+    // TODO Later: Maybe set up a native Vulkan swap chain instead, a bit more work but
+    // may avoid possible XWayland compatibility issues since it can then run natively on
+    // Wayland
+    wgpu::SurfaceDescriptorFromXlib native_surf;
+    native_surf.display = wm_info.info.x11.display;
+    native_surf.window = wm_info.info.x11.window;
 #endif
 
     wgpu::SurfaceDescriptor surface_desc;

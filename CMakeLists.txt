@@ -38,15 +38,21 @@ add_spirv_embed_library(spv_shaders triangle_vert.vert triangle_frag.frag)
 add_executable(wgpu-starter main.cpp)
 
 set_target_properties(wgpu-starter PROPERTIES
-	CXX_STANDARD 14
+	CXX_STANDARD 11
 	CXX_STANDARD_REQUIRED ON)
 
 target_link_libraries(wgpu-starter PRIVATE spv_shaders)
 
 if (NOT EMSCRIPTEN)
-    target_link_libraries(wgpu-starter PUBLIC
-        SDL2::SDL2
-        SDL2::SDL2main)
+    if (TARGET SDL2::SDL2)
+        target_link_libraries(wgpu-starter PUBLIC
+            SDL2::SDL2
+            SDL2::SDL2main)
+    else()
+        target_include_directories(wgpu-starter PUBLIC
+            $<BUILD_INTERFACE:${SDL2_INCLUDE_DIRS}>)
+        target_link_libraries(wgpu-starter PUBLIC ${SDL2_LIBRARIES})
+    endif()
 
     target_link_libraries(wgpu-starter
         PUBLIC
@@ -71,13 +77,23 @@ if (NOT EMSCRIPTEN)
         add_library(metal_util metal_util.mm)
 
         target_link_libraries(metal_util PUBLIC
-            SDL2::SDL2
             Dawn
             ${QUARTZ_CORE}
             ${METAL_LIB}
             ${COCOA_LIB})
 
+        set_target_properties(metal_util PROPERTIES
+            CXX_STANDARD 11)
+
+        if (TARGET SDL2::SDL2)
+            target_link_libraries(metal_util PUBLIC
+                SDL2::SDL2)
+        else()
+            target_include_directories(metal_util PUBLIC
+                $<BUILD_INTERFACE:${SDL2_INCLUDE_DIRS}>)
+            target_link_libraries(metal_util PUBLIC ${SDL2_LIBRARIES})
+        endif()
+
         target_link_libraries(wgpu-starter PUBLIC metal_util)
     endif()
-
 endif()

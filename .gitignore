@@ -12,3 +12,4 @@ main.js
 main.wasm
 cmake-build-release
 ninja-gen
+.clangd
