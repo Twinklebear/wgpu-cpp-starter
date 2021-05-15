@@ -8,7 +8,7 @@ You can build the project using Emscripten's CMake wrapper. The VulkanSDK is
 required to provide `glslc` to compile shaders to SPV. This path should be
 to the specific version of Vulkan you have installed, e.g., `-DVULKAN_SDK=<path>/VulkanSDK/<version>`.
 On macOS you must also specify the `macOS` subdirectory after the version.
-The Vulkan requirement will be removed if SPV support is removed from WebGPU
+The Vulkan requirement may be removed in the future if SPV support is removed from WebGPU
 and replaced with WGSL.
 
 ```
