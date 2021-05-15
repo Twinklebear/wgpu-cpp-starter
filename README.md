@@ -49,9 +49,16 @@ cmake --build .
 
 If on Windows copy over the dll's in Dawn's build directory,
 and you can then run the native app. On Mac or Linux, the dylibs/sos
-just need to be in the path of the executable
+just need to be in the path of the executable.
+
+Then on Windows you can run:
 
 ```
-./<build config>/wgpu-starter
+./<build config>/wgpu-starter.exe
 ```
 
+Or on Mac/Linux:
+
+```
+./wgpu-starter
+```
