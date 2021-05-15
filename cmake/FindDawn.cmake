@@ -1,4 +1,3 @@
-
 find_path(DAWN_WGPU_INCLUDE_DIR
     NAME dawn/webgpu.h
     PATHS
@@ -9,26 +8,35 @@ mark_as_advanced(DAWN_WGPU_INCLUDE_DIR)
 find_path(DAWN_INCLUDE_DIR
     NAME dawn/EnumClassBitmasks.h
     PATHS
-    ${Dawn_DIR}../../src/include/
+    ${Dawn_DIR}/../../src/include/
 )
 mark_as_advanced(DAWN_INCLUDE_DIR)
 
 set(DAWN_INCLUDE_DIRS ${DAWN_WGPU_INCLUDE_DIR} ${DAWN_INCLUDE_DIR})
 
 find_library(DAWN_NATIVE_LIBRARY
-    NAMES dawn_native.dll.lib
+    NAMES
+    dawn_native
+    # On windows Dawn has the dll in the name
+    dawn_native.dll.lib
     PATHS ${Dawn_DIR}
     NO_DEFAULT_PATH
 )
 
 find_library(DAWN_PLATFORM_LIBRARY
-    NAMES dawn_platform.dll.lib
+    NAMES
+    dawn_platform
+    # On windows Dawn has the dll in the name
+    dawn_platform.dll.lib
     PATHS ${Dawn_DIR}
     NO_DEFAULT_PATH
 )
 
 find_library(DAWN_PROC_LIBRARY
-    NAMES dawn_proc.dll.lib
+    NAMES
+    dawn_proc
+    # On windows Dawn has the dll in the name
+    dawn_proc.dll.lib
     PATHS ${Dawn_DIR}
     NO_DEFAULT_PATH
 )
@@ -54,6 +62,7 @@ if (Dawn_FOUND AND NOT TARGET Dawn)
         ${DAWN_NATIVE_LIBRARY}
         INTERFACE_INCLUDE_DIRECTORIES
         "${DAWN_INCLUDE_DIRS}")
+    target_compile_features(Dawn::Native INTERFACE cxx_std_11)
 
     add_library(Dawn::Platform UNKNOWN IMPORTED)
     set_target_properties(Dawn::Platform PROPERTIES
@@ -61,6 +70,7 @@ if (Dawn_FOUND AND NOT TARGET Dawn)
         ${DAWN_PLATFORM_LIBRARY}
         INTERFACE_INCLUDE_DIRECTORIES
         "${DAWN_INCLUDE_DIRS}")
+    target_compile_features(Dawn::Platform INTERFACE cxx_std_11)
 
     add_library(Dawn::Proc UNKNOWN IMPORTED)
     set_target_properties(Dawn::Proc PROPERTIES
@@ -68,8 +78,10 @@ if (Dawn_FOUND AND NOT TARGET Dawn)
         ${DAWN_PROC_LIBRARY}
         INTERFACE_INCLUDE_DIRECTORIES
         "${DAWN_INCLUDE_DIRS}")
+    target_compile_features(Dawn::Proc INTERFACE cxx_std_11)
 
     add_library(Dawn INTERFACE)
+    target_compile_features(Dawn INTERFACE cxx_std_11)
     target_link_libraries(Dawn INTERFACE
         Dawn::Native
         Dawn::Platform

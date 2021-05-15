@@ -12,7 +12,14 @@
 #include <SDL_syswm.h>
 #include <dawn/dawn_proc.h>
 #include <dawn/webgpu_cpp.h>
+
+#if defined(_WIN32)
 #include <dawn_native/D3D12Backend.h>
+#elif defined(__APPLE__)
+#include <dawn_native/MetalBackend.h>
+#include "metal_util.h"
+#endif
+
 #endif
 
 #include "spv_shaders_embedded_spv.h"
@@ -45,7 +52,15 @@ int main(int argc, const char **argv)
 #else
     dawn_native::Instance dawn_instance;
 
-    auto adapter = request_adapter(dawn_instance, wgpu::BackendType::D3D12);
+#if defined(_WIN32)
+    const auto backend_type = wgpu::BackendType::D3D12;
+#elif defined(__APPLE__)
+    const auto backend_type = wgpu::BackendType::Metal;
+#else
+    // TODO linux
+#endif
+
+    auto adapter = request_adapter(dawn_instance, backend_type);
     DawnProcTable procs(dawn_native::GetProcs());
     dawnProcSetProcs(&procs);
 
@@ -54,16 +69,6 @@ int main(int argc, const char **argv)
 
     SDL_Window *window = SDL_CreateWindow(
         "wgpu-starter", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, 0);
-
-    // Setup the swap chain for D3D12
-    SDL_SysWMinfo wm_info;
-    SDL_VERSION(&wm_info.version);
-    SDL_GetWindowWMInfo(window, &wm_info);
-
-    auto swap_chain_impl =
-        dawn_native::d3d12::CreateNativeSwapChainImpl(device.Get(), wm_info.info.win.window);
-    auto swap_chain_pref_fmt =
-        dawn_native::d3d12::GetNativeSwapChainPreferredFormat(&swap_chain_impl);
 
 #endif
     device.SetUncapturedErrorCallback(
@@ -82,9 +87,22 @@ int main(int argc, const char **argv)
     wgpu::SurfaceDescriptor surface_desc;
     surface_desc.nextInChain = &selector;
 #else
+
+    // Setup the swap chain for the native API
+#if defined(_WIN32)
+    SDL_SysWMinfo wm_info;
+    SDL_VERSION(&wm_info.version);
+    SDL_GetWindowWMInfo(window, &wm_info);
+
     wgpu::SurfaceDescriptorFromWindowsHWND native_surf;
     native_surf.hwnd = wm_info.info.win.window;
     native_surf.hinstance = wm_info.info.win.hinstance;
+#elif defined(__APPLE__)
+    auto context = metal::make_context(window);
+    wgpu::SurfaceDescriptorFromMetalLayer native_surf = metal::surface_descriptor(context);
+#else
+#error "Linux TODO"
+#endif
 
     wgpu::SurfaceDescriptor surface_desc;
     surface_desc.nextInChain = &native_surf;
@@ -98,11 +116,6 @@ int main(int argc, const char **argv)
     swap_chain_desc.presentMode = wgpu::PresentMode::Fifo;
     swap_chain_desc.width = 640;
     swap_chain_desc.height = 480;
-
-#ifndef __EMSCRIPTEN__
-    auto native_swap_chain =
-        dawn_native::d3d12::CreateNativeSwapChainImpl(device.Get(), wm_info.info.win.window);
-#endif
 
     wgpu::SwapChain swap_chain = device.CreateSwapChain(surface, &swap_chain_desc);
 

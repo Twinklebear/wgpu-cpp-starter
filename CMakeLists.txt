@@ -46,4 +46,33 @@ if (NOT EMSCRIPTEN)
     target_link_libraries(wgpu-starter
         PUBLIC
         webgpu_cpp)
+
+    if (APPLE)
+        find_library(QUARTZ_CORE QuartzCore)
+        if (NOT QUARTZ_CORE)
+            message(FATAL_ERROR "QuartzCore not found")
+        endif()
+
+        find_library(METAL_LIB Metal)
+        if (NOT METAL_LIB)
+            message(FATAL_ERROR "Metal not found")
+        endif()
+
+        find_library(COCOA_LIB Cocoa)
+        if (NOT COCOA_LIB)
+            message(FATAL_ERROR "Cocoa not found")
+        endif()
+
+        add_library(metal_util metal_util.mm)
+
+        target_link_libraries(metal_util PUBLIC
+            SDL2::SDL2
+            Dawn
+            ${QUARTZ_CORE}
+            ${METAL_LIB}
+            ${COCOA_LIB})
+
+        target_link_libraries(wgpu-starter PUBLIC metal_util)
+    endif()
+
 endif()

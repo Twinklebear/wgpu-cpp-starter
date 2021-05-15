@@ -75,6 +75,8 @@ elseif (NOT EMSCRIPTEN)
             PATHS
             ${VULKAN_SDK}/x86_64/include
             $ENV{VULKAN_SDK}/x86_64/include
+            ${VULKAN_SDK}/include
+            $ENV{VULKAN_SDK}/include
             NO_DEFAULT_PATH
         )
         find_library(Vulkan_LIBRARY
@@ -82,6 +84,8 @@ elseif (NOT EMSCRIPTEN)
             PATHS
             ${VULKAN_SDK}/x86_64/lib
             $ENV{VULKAN_SDK}/x86_64/lib
+            ${VULKAN_SDK}/lib
+            $ENV{VULKAN_SDK}/lib
             NO_DEFAULT_PATH
         )
         find_program(GLSLC
@@ -89,6 +93,8 @@ elseif (NOT EMSCRIPTEN)
             PATHS
             ${VULKAN_SDK}/x86_64/bin
             $ENV{VULKAN_SDK}/x86_64/bin
+            ${VULKAN_SDK}/bin
+            $ENV{VULKAN_SDK}/bin
             NO_DEFAULT_PATH
         )
     else ()
