@@ -10,8 +10,13 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
 if (NOT EMSCRIPTEN)
     add_definitions(-DNOMINMAX
         -DSDL_MAIN_HANDLED
-        -DWIN32_LEAN_AND_MEAN
-        -DDAWN_ENABLE_BACKEND_D3D12)
+        -DWIN32_LEAN_AND_MEAN)
+
+    if (WIN32)
+        add_definitions(-DDAWN_ENABLE_BACKEND_D3D12)
+    elseif (APPLE)
+        add_definitions(-DDAWN_ENABLE_BACKEND_METAL)
+    endif()
 
     find_package(Threads REQUIRED)
     find_package(SDL2 CONFIG REQUIRED)
