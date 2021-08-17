@@ -31,17 +31,11 @@ else()
     configure_file(index.html.in ${CMAKE_CURRENT_BINARY_DIR}/index.html @ONLY)
 endif()
 
-find_package(Vulkan REQUIRED)
-
-add_spirv_embed_library(spv_shaders triangle_vert.vert triangle_frag.frag)
-
 add_executable(wgpu-starter main.cpp)
 
 set_target_properties(wgpu-starter PROPERTIES
 	CXX_STANDARD 11
 	CXX_STANDARD_REQUIRED ON)
-
-target_link_libraries(wgpu-starter PRIVATE spv_shaders)
 
 if (NOT EMSCRIPTEN)
     if (TARGET SDL2::SDL2)

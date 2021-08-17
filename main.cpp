@@ -29,7 +29,30 @@
 
 #endif
 
-#include "spv_shaders_embedded_spv.h"
+const std::string WGSL_SHADER = R"(
+struct VertexInput {
+    [[location(0)]] position: vec4<f32>;
+    [[location(1)]] color: vec4<f32>;
+};
+
+struct VertexOutput {
+    [[builtin(position)]] position: vec4<f32>;
+    [[location(0)]] color: vec4<f32>;
+};
+
+[[stage(vertex)]]
+fn vertex_main(vert: VertexInput) -> VertexOutput {
+    var out: VertexOutput;
+    out.color = vert.color;
+    out.position = vert.position;
+    return out;
+};
+
+[[stage(fragment)]]
+fn fragment_main(in: VertexOutput) -> [[location(0)]] vec4<f32> {
+    return vec4<f32>(in.color);
+}
+)";
 
 #ifndef __EMSCRIPTEN__
 dawn_native::Adapter request_adapter(dawn_native::Instance &instance,
@@ -127,7 +150,7 @@ int main(int argc, const char **argv)
 
     wgpu::SwapChainDescriptor swap_chain_desc;
     swap_chain_desc.format = wgpu::TextureFormat::BGRA8Unorm;
-    swap_chain_desc.usage = wgpu::TextureUsage::OutputAttachment;
+    swap_chain_desc.usage = wgpu::TextureUsage::RenderAttachment;
     swap_chain_desc.presentMode = wgpu::PresentMode::Fifo;
     swap_chain_desc.width = 640;
     swap_chain_desc.height = 480;
@@ -143,26 +166,14 @@ int main(int argc, const char **argv)
     color_attachment.loadOp = wgpu::LoadOp::Clear;
     color_attachment.storeOp = wgpu::StoreOp::Store;
 
-    wgpu::ShaderModule vertex_module;
+    wgpu::ShaderModule shader_module;
     {
-        wgpu::ShaderModuleSPIRVDescriptor shader_module_spv;
-        shader_module_spv.code = triangle_vert_spv;
-        shader_module_spv.codeSize = sizeof(triangle_vert_spv) / sizeof(uint32_t);
+        wgpu::ShaderModuleWGSLDescriptor shader_module_wgsl;
+        shader_module_wgsl.source = WGSL_SHADER.c_str();
 
         wgpu::ShaderModuleDescriptor shader_module_desc;
-        shader_module_desc.nextInChain = &shader_module_spv;
-        vertex_module = device.CreateShaderModule(&shader_module_desc);
-    }
-
-    wgpu::ShaderModule fragment_module;
-    {
-        wgpu::ShaderModuleSPIRVDescriptor shader_module_spv;
-        shader_module_spv.code = triangle_frag_spv;
-        shader_module_spv.codeSize = sizeof(triangle_frag_spv) / sizeof(uint32_t);
-
-        wgpu::ShaderModuleDescriptor shader_module_desc;
-        shader_module_desc.nextInChain = &shader_module_spv;
-        fragment_module = device.CreateShaderModule(&shader_module_desc);
+        shader_module_desc.nextInChain = &shader_module_wgsl;
+        shader_module = device.CreateShaderModule(&shader_module_desc);
     }
 
     // Upload vertex data
@@ -197,8 +208,8 @@ int main(int argc, const char **argv)
     vertex_buf_layout.attributes = vertex_attributes.data();
 
     wgpu::VertexState vertex_state;
-    vertex_state.module = vertex_module;
-    vertex_state.entryPoint = "main";
+    vertex_state.module = shader_module;
+    vertex_state.entryPoint = "vertex_main";
     vertex_state.bufferCount = 1;
     vertex_state.buffers = &vertex_buf_layout;
 
@@ -206,17 +217,27 @@ int main(int argc, const char **argv)
     render_target_state.format = wgpu::TextureFormat::BGRA8Unorm;
 
     wgpu::FragmentState fragment_state;
-    fragment_state.module = fragment_module;
-    fragment_state.entryPoint = "main";
+    fragment_state.module = shader_module;
+    fragment_state.entryPoint = "fragment_main";
     fragment_state.targetCount = 1;
     fragment_state.targets = &render_target_state;
 
+#ifndef __EMSCRIPTEN__
+    wgpu::RenderPipelineDescriptor render_pipeline_desc;
+#else
+    // Emscripten is behind Dawn
     wgpu::RenderPipelineDescriptor2 render_pipeline_desc;
+#endif
     render_pipeline_desc.vertex = vertex_state;
     render_pipeline_desc.fragment = &fragment_state;
     // Default primitive state is what we want, triangle list, no indices
 
+#ifndef __EMSCRIPTEN__
+    wgpu::RenderPipeline render_pipeline = device.CreateRenderPipeline(&render_pipeline_desc);
+#else
+    // Emscript is behind Dawn
     wgpu::RenderPipeline render_pipeline = device.CreateRenderPipeline2(&render_pipeline_desc);
+#endif
 
     wgpu::RenderPassDescriptor pass_desc;
     pass_desc.colorAttachmentCount = 1;
