@@ -6,6 +6,11 @@ if (NOT WIN32)
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
+include(ExternalProject)
+
+include(cmake/glm.cmake)
+
+add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
 
 if (NOT EMSCRIPTEN)
     add_definitions(-DNOMINMAX
@@ -31,11 +36,15 @@ else()
     configure_file(index.html.in ${CMAKE_CURRENT_BINARY_DIR}/index.html @ONLY)
 endif()
 
-add_executable(wgpu-starter main.cpp)
+add_executable(wgpu-starter
+    main.cpp
+    arcball_camera.cpp)
 
 set_target_properties(wgpu-starter PROPERTIES
 	CXX_STANDARD 11
 	CXX_STANDARD_REQUIRED ON)
+
+target_link_libraries(wgpu-starter PRIVATE glm)
 
 if (NOT EMSCRIPTEN)
     if (TARGET SDL2::SDL2)

@@ -5,7 +5,7 @@
 </head>
 <body>
     <!-- The canvas to display our renderer output on -->
-    <canvas id="webgpu-canvas" width="640" height="480"></canvas>
+    <canvas id="webgpu-canvas" width="640" height="480" oncontextmenu="return false;"></canvas>
 
     <script>
         var Module;
