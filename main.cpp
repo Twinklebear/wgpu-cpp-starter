@@ -14,6 +14,7 @@
 #include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
 #include <emscripten/html5_webgpu.h>
+// TODO: Maybe change to use the plain C API?
 #include <webgpu/webgpu_cpp.h>
 #else
 #include <dawn/dawn_proc.h>
@@ -35,25 +36,26 @@
 #endif
 
 const std::string WGSL_SHADER = R"(
+alias float4 = vec4<f32>;
+
 struct VertexInput {
-    [[location(0)]] position: vec4<f32>;
-    [[location(1)]] color: vec4<f32>;
+    @location(0) position: float4,
+    @location(1) color: float4,
 };
 
 struct VertexOutput {
-    [[builtin(position)]] position: vec4<f32>;
-    [[location(0)]] color: vec4<f32>;
+    @builtin(position) position: float4,
+    @location(0) color: float4,
 };
 
-[[block]]
 struct ViewParams {
-    view_proj: mat4x4<f32>;
+    view_proj: mat4x4<f32>,
 };
 
-[[group(0), binding(0)]]
+@group(0) @binding(0)
 var<uniform> view_params: ViewParams;
 
-[[stage(vertex)]]
+@vertex
 fn vertex_main(vert: VertexInput) -> VertexOutput {
     var out: VertexOutput;
     out.color = vert.color;
@@ -61,9 +63,9 @@ fn vertex_main(vert: VertexInput) -> VertexOutput {
     return out;
 };
 
-[[stage(fragment)]]
-fn fragment_main(in: VertexOutput) -> [[location(0)]] vec4<f32> {
-    return vec4<f32>(in.color);
+@fragment
+fn fragment_main(in: VertexOutput) -> @location(0) float4 {
+    return float4(in.color);
 }
 )";
 
@@ -155,6 +157,12 @@ int main(int argc, const char **argv)
         },
         nullptr);
 
+    app_state->device.SetLoggingCallback(
+        [](WGPULoggingType type, const char *msg, void *data) {
+            std::cout << "WebGPU Log: " << msg << "\n" << std::flush;
+        },
+        nullptr);
+
     app_state->queue = app_state->device.GetQueue();
 
 #ifdef __EMSCRIPTEN__
@@ -215,6 +223,39 @@ int main(int argc, const char **argv)
         wgpu::ShaderModuleDescriptor shader_module_desc;
         shader_module_desc.nextInChain = &shader_module_wgsl;
         shader_module = app_state->device.CreateShaderModule(&shader_module_desc);
+
+        // TODO: Status always seems to be success even when there are errors?
+        shader_module.GetCompilationInfo(
+            [](WGPUCompilationInfoRequestStatus status,
+               WGPUCompilationInfo const *info,
+               void *) {
+                if (info->messageCount != 0) {
+                    std::cout << "Shader compilation info:\n";
+                    for (uint32_t i = 0; i < info->messageCount; ++i) {
+                        const auto &m = info->messages[i];
+                        std::cout << m.lineNum << ":" << m.linePos << ": ";
+                        switch (m.type) {
+                        case WGPUCompilationMessageType_Error:
+                            std::cout << "error";
+                            break;
+                        case WGPUCompilationMessageType_Warning:
+                            std::cout << "warning";
+                            break;
+                        case WGPUCompilationMessageType_Info:
+                            std::cout << "info";
+                            break;
+                        case WGPUCompilationMessageType_Force32:
+                            std::cout << "force32";
+                            break;
+                        default:
+                            break;
+                        }
+
+                        std::cout << ": " << m.message << "\n";
+                    }
+                }
+            },
+            nullptr);
     }
 
     // Upload vertex data
