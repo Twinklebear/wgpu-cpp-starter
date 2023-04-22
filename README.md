@@ -26,7 +26,6 @@ The application uses [Dawn](https://dawn.googlesource.com/dawn/) to provide an
 implementation of WebGPU for native platforms. Carl Woffenden has a good
 [guide](https://github.com/cwoffenden/hello-webgpu/blob/master/lib/README.md)
 about building Dawn which you can follow to build Dawn.
-**Note: right now this builds against Dawn at tag:** `origin/chromium/4609`.
 
 ```
 mkdir cmake-build
