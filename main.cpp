@@ -26,7 +26,7 @@
 #if defined(_WIN32)
 #include <dawn_native/D3D12Backend.h>
 #elif defined(__APPLE__)
-#include <dawn_native/MetalBackend.h>
+#include <dawn/native/MetalBackend.h>
 #include "metal_util.h"
 #else
 #include <dawn_native/VulkanBackend.h>
@@ -423,10 +423,10 @@ void loop_iteration(void *_app_state)
 
     wgpu::RenderPassColorAttachment color_attachment;
     color_attachment.view = app_state->swap_chain.GetCurrentTextureView();
-    color_attachment.clearColor.r = 0.f;
-    color_attachment.clearColor.g = 0.f;
-    color_attachment.clearColor.b = 0.f;
-    color_attachment.clearColor.a = 1.f;
+    color_attachment.clearValue.r = 0.f;
+    color_attachment.clearValue.g = 0.f;
+    color_attachment.clearValue.b = 0.f;
+    color_attachment.clearValue.a = 1.f;
     color_attachment.loadOp = wgpu::LoadOp::Clear;
     color_attachment.storeOp = wgpu::StoreOp::Store;
 
@@ -445,7 +445,7 @@ void loop_iteration(void *_app_state)
     render_pass_enc.SetVertexBuffer(0, app_state->vertex_buf);
     render_pass_enc.SetBindGroup(0, app_state->bind_group);
     render_pass_enc.Draw(3);
-    render_pass_enc.EndPass();
+    render_pass_enc.End();
 
     wgpu::CommandBuffer commands = encoder.Finish();
     // Here the # refers to the number of command buffers being submitted

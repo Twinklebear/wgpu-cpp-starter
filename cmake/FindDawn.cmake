@@ -1,14 +1,14 @@
 find_path(DAWN_WGPU_INCLUDE_DIR
     NAME dawn/webgpu.h
     PATHS
-    ${Dawn_DIR}/gen/src/include/
+    ${Dawn_DIR}/gen/include/
 )
 mark_as_advanced(DAWN_WGPU_INCLUDE_DIR)
 
 find_path(DAWN_INCLUDE_DIR
     NAME dawn/EnumClassBitmasks.h
     PATHS
-    ${Dawn_DIR}/../../src/include/
+    ${Dawn_DIR}/../../include/
 )
 mark_as_advanced(DAWN_INCLUDE_DIR)
 
@@ -86,5 +86,11 @@ if (Dawn_FOUND AND NOT TARGET Dawn)
         Dawn::Native
         Dawn::Platform
         Dawn::Proc)
+
+    if (APPLE)
+        message(WARNING
+            "Make sure you fixed libdawn_native, libdawn_platform and libdawn_proc LC_ID_DYLIB with install_name_tool -id!\n"
+            "Run: install_name_tool -id \"@rpath/libdawn_<name>.dylib\" libdawn_<name>.dylib")
+    endif()
 endif()
 
