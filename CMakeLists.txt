@@ -30,7 +30,7 @@ if (NOT EMSCRIPTEN)
     add_library(webgpu_cpp webgpu_cpp.cpp)
     target_link_libraries(webgpu_cpp PUBLIC Dawn)
 else()
-    set(CMAKE_EXE_LINKER_FLAGS "-s USE_WEBGPU=1")
+    set(CMAKE_EXE_LINKER_FLAGS "-s USE_WEBGPU=1 -g-source-map")
     # Generate the index.html file that will load our Emscripten compiled module
     set(APP_TARGET_NAME wgpu-starter)
     configure_file(index.html.in ${CMAKE_CURRENT_BINARY_DIR}/index.html @ONLY)

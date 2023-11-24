@@ -1,6 +1,9 @@
+
+#include <utility>
+
 #include "dawn/webgpu_cpp.h"
 
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
 // error: 'offsetof' within non-standard-layout type 'wgpu::XXX' is conditionally-supported
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
 #endif
@@ -40,6 +43,7 @@ namespace wgpu {
     static_assert(sizeof(BackendType) == sizeof(WGPUBackendType), "sizeof mismatch for BackendType");
     static_assert(alignof(BackendType) == alignof(WGPUBackendType), "alignof mismatch for BackendType");
 
+    static_assert(static_cast<uint32_t>(BackendType::Undefined) == WGPUBackendType_Undefined, "value mismatch for BackendType::Undefined");
     static_assert(static_cast<uint32_t>(BackendType::Null) == WGPUBackendType_Null, "value mismatch for BackendType::Null");
     static_assert(static_cast<uint32_t>(BackendType::WebGPU) == WGPUBackendType_WebGPU, "value mismatch for BackendType::WebGPU");
     static_assert(static_cast<uint32_t>(BackendType::D3D11) == WGPUBackendType_D3D11, "value mismatch for BackendType::D3D11");
@@ -67,6 +71,10 @@ namespace wgpu {
     static_assert(static_cast<uint32_t>(BlendFactor::SrcAlphaSaturated) == WGPUBlendFactor_SrcAlphaSaturated, "value mismatch for BlendFactor::SrcAlphaSaturated");
     static_assert(static_cast<uint32_t>(BlendFactor::Constant) == WGPUBlendFactor_Constant, "value mismatch for BlendFactor::Constant");
     static_assert(static_cast<uint32_t>(BlendFactor::OneMinusConstant) == WGPUBlendFactor_OneMinusConstant, "value mismatch for BlendFactor::OneMinusConstant");
+    static_assert(static_cast<uint32_t>(BlendFactor::Src1) == WGPUBlendFactor_Src1, "value mismatch for BlendFactor::Src1");
+    static_assert(static_cast<uint32_t>(BlendFactor::OneMinusSrc1) == WGPUBlendFactor_OneMinusSrc1, "value mismatch for BlendFactor::OneMinusSrc1");
+    static_assert(static_cast<uint32_t>(BlendFactor::Src1Alpha) == WGPUBlendFactor_Src1Alpha, "value mismatch for BlendFactor::Src1Alpha");
+    static_assert(static_cast<uint32_t>(BlendFactor::OneMinusSrc1Alpha) == WGPUBlendFactor_OneMinusSrc1Alpha, "value mismatch for BlendFactor::OneMinusSrc1Alpha");
 
     // BlendOperation
 
@@ -95,11 +103,14 @@ namespace wgpu {
     static_assert(alignof(BufferMapAsyncStatus) == alignof(WGPUBufferMapAsyncStatus), "alignof mismatch for BufferMapAsyncStatus");
 
     static_assert(static_cast<uint32_t>(BufferMapAsyncStatus::Success) == WGPUBufferMapAsyncStatus_Success, "value mismatch for BufferMapAsyncStatus::Success");
-    static_assert(static_cast<uint32_t>(BufferMapAsyncStatus::Error) == WGPUBufferMapAsyncStatus_Error, "value mismatch for BufferMapAsyncStatus::Error");
+    static_assert(static_cast<uint32_t>(BufferMapAsyncStatus::ValidationError) == WGPUBufferMapAsyncStatus_ValidationError, "value mismatch for BufferMapAsyncStatus::ValidationError");
     static_assert(static_cast<uint32_t>(BufferMapAsyncStatus::Unknown) == WGPUBufferMapAsyncStatus_Unknown, "value mismatch for BufferMapAsyncStatus::Unknown");
     static_assert(static_cast<uint32_t>(BufferMapAsyncStatus::DeviceLost) == WGPUBufferMapAsyncStatus_DeviceLost, "value mismatch for BufferMapAsyncStatus::DeviceLost");
     static_assert(static_cast<uint32_t>(BufferMapAsyncStatus::DestroyedBeforeCallback) == WGPUBufferMapAsyncStatus_DestroyedBeforeCallback, "value mismatch for BufferMapAsyncStatus::DestroyedBeforeCallback");
     static_assert(static_cast<uint32_t>(BufferMapAsyncStatus::UnmappedBeforeCallback) == WGPUBufferMapAsyncStatus_UnmappedBeforeCallback, "value mismatch for BufferMapAsyncStatus::UnmappedBeforeCallback");
+    static_assert(static_cast<uint32_t>(BufferMapAsyncStatus::MappingAlreadyPending) == WGPUBufferMapAsyncStatus_MappingAlreadyPending, "value mismatch for BufferMapAsyncStatus::MappingAlreadyPending");
+    static_assert(static_cast<uint32_t>(BufferMapAsyncStatus::OffsetOutOfRange) == WGPUBufferMapAsyncStatus_OffsetOutOfRange, "value mismatch for BufferMapAsyncStatus::OffsetOutOfRange");
+    static_assert(static_cast<uint32_t>(BufferMapAsyncStatus::SizeOutOfRange) == WGPUBufferMapAsyncStatus_SizeOutOfRange, "value mismatch for BufferMapAsyncStatus::SizeOutOfRange");
 
     // BufferMapState
 
@@ -109,6 +120,15 @@ namespace wgpu {
     static_assert(static_cast<uint32_t>(BufferMapState::Unmapped) == WGPUBufferMapState_Unmapped, "value mismatch for BufferMapState::Unmapped");
     static_assert(static_cast<uint32_t>(BufferMapState::Pending) == WGPUBufferMapState_Pending, "value mismatch for BufferMapState::Pending");
     static_assert(static_cast<uint32_t>(BufferMapState::Mapped) == WGPUBufferMapState_Mapped, "value mismatch for BufferMapState::Mapped");
+
+    // CallbackMode
+
+    static_assert(sizeof(CallbackMode) == sizeof(WGPUCallbackMode), "sizeof mismatch for CallbackMode");
+    static_assert(alignof(CallbackMode) == alignof(WGPUCallbackMode), "alignof mismatch for CallbackMode");
+
+    static_assert(static_cast<uint32_t>(CallbackMode::WaitAnyOnly) == WGPUCallbackMode_WaitAnyOnly, "value mismatch for CallbackMode::WaitAnyOnly");
+    static_assert(static_cast<uint32_t>(CallbackMode::AllowProcessEvents) == WGPUCallbackMode_AllowProcessEvents, "value mismatch for CallbackMode::AllowProcessEvents");
+    static_assert(static_cast<uint32_t>(CallbackMode::AllowSpontaneous) == WGPUCallbackMode_AllowSpontaneous, "value mismatch for CallbackMode::AllowSpontaneous");
 
     // CompareFunction
 
@@ -143,14 +163,6 @@ namespace wgpu {
     static_assert(static_cast<uint32_t>(CompilationMessageType::Error) == WGPUCompilationMessageType_Error, "value mismatch for CompilationMessageType::Error");
     static_assert(static_cast<uint32_t>(CompilationMessageType::Warning) == WGPUCompilationMessageType_Warning, "value mismatch for CompilationMessageType::Warning");
     static_assert(static_cast<uint32_t>(CompilationMessageType::Info) == WGPUCompilationMessageType_Info, "value mismatch for CompilationMessageType::Info");
-
-    // ComputePassTimestampLocation
-
-    static_assert(sizeof(ComputePassTimestampLocation) == sizeof(WGPUComputePassTimestampLocation), "sizeof mismatch for ComputePassTimestampLocation");
-    static_assert(alignof(ComputePassTimestampLocation) == alignof(WGPUComputePassTimestampLocation), "alignof mismatch for ComputePassTimestampLocation");
-
-    static_assert(static_cast<uint32_t>(ComputePassTimestampLocation::Beginning) == WGPUComputePassTimestampLocation_Beginning, "value mismatch for ComputePassTimestampLocation::Beginning");
-    static_assert(static_cast<uint32_t>(ComputePassTimestampLocation::End) == WGPUComputePassTimestampLocation_End, "value mismatch for ComputePassTimestampLocation::End");
 
     // CreatePipelineAsyncStatus
 
@@ -221,7 +233,6 @@ namespace wgpu {
     static_assert(static_cast<uint32_t>(FeatureName::DepthClipControl) == WGPUFeatureName_DepthClipControl, "value mismatch for FeatureName::DepthClipControl");
     static_assert(static_cast<uint32_t>(FeatureName::Depth32FloatStencil8) == WGPUFeatureName_Depth32FloatStencil8, "value mismatch for FeatureName::Depth32FloatStencil8");
     static_assert(static_cast<uint32_t>(FeatureName::TimestampQuery) == WGPUFeatureName_TimestampQuery, "value mismatch for FeatureName::TimestampQuery");
-    static_assert(static_cast<uint32_t>(FeatureName::PipelineStatisticsQuery) == WGPUFeatureName_PipelineStatisticsQuery, "value mismatch for FeatureName::PipelineStatisticsQuery");
     static_assert(static_cast<uint32_t>(FeatureName::TextureCompressionBC) == WGPUFeatureName_TextureCompressionBC, "value mismatch for FeatureName::TextureCompressionBC");
     static_assert(static_cast<uint32_t>(FeatureName::TextureCompressionETC2) == WGPUFeatureName_TextureCompressionETC2, "value mismatch for FeatureName::TextureCompressionETC2");
     static_assert(static_cast<uint32_t>(FeatureName::TextureCompressionASTC) == WGPUFeatureName_TextureCompressionASTC, "value mismatch for FeatureName::TextureCompressionASTC");
@@ -229,14 +240,45 @@ namespace wgpu {
     static_assert(static_cast<uint32_t>(FeatureName::ShaderF16) == WGPUFeatureName_ShaderF16, "value mismatch for FeatureName::ShaderF16");
     static_assert(static_cast<uint32_t>(FeatureName::RG11B10UfloatRenderable) == WGPUFeatureName_RG11B10UfloatRenderable, "value mismatch for FeatureName::RG11B10UfloatRenderable");
     static_assert(static_cast<uint32_t>(FeatureName::BGRA8UnormStorage) == WGPUFeatureName_BGRA8UnormStorage, "value mismatch for FeatureName::BGRA8UnormStorage");
-    static_assert(static_cast<uint32_t>(FeatureName::DawnShaderFloat16) == WGPUFeatureName_DawnShaderFloat16, "value mismatch for FeatureName::DawnShaderFloat16");
+    static_assert(static_cast<uint32_t>(FeatureName::Float32Filterable) == WGPUFeatureName_Float32Filterable, "value mismatch for FeatureName::Float32Filterable");
     static_assert(static_cast<uint32_t>(FeatureName::DawnInternalUsages) == WGPUFeatureName_DawnInternalUsages, "value mismatch for FeatureName::DawnInternalUsages");
     static_assert(static_cast<uint32_t>(FeatureName::DawnMultiPlanarFormats) == WGPUFeatureName_DawnMultiPlanarFormats, "value mismatch for FeatureName::DawnMultiPlanarFormats");
     static_assert(static_cast<uint32_t>(FeatureName::DawnNative) == WGPUFeatureName_DawnNative, "value mismatch for FeatureName::DawnNative");
     static_assert(static_cast<uint32_t>(FeatureName::ChromiumExperimentalDp4a) == WGPUFeatureName_ChromiumExperimentalDp4a, "value mismatch for FeatureName::ChromiumExperimentalDp4a");
-    static_assert(static_cast<uint32_t>(FeatureName::TimestampQueryInsidePasses) == WGPUFeatureName_TimestampQueryInsidePasses, "value mismatch for FeatureName::TimestampQueryInsidePasses");
+    static_assert(static_cast<uint32_t>(FeatureName::ChromiumExperimentalTimestampQueryInsidePasses) == WGPUFeatureName_ChromiumExperimentalTimestampQueryInsidePasses, "value mismatch for FeatureName::ChromiumExperimentalTimestampQueryInsidePasses");
     static_assert(static_cast<uint32_t>(FeatureName::ImplicitDeviceSynchronization) == WGPUFeatureName_ImplicitDeviceSynchronization, "value mismatch for FeatureName::ImplicitDeviceSynchronization");
     static_assert(static_cast<uint32_t>(FeatureName::SurfaceCapabilities) == WGPUFeatureName_SurfaceCapabilities, "value mismatch for FeatureName::SurfaceCapabilities");
+    static_assert(static_cast<uint32_t>(FeatureName::TransientAttachments) == WGPUFeatureName_TransientAttachments, "value mismatch for FeatureName::TransientAttachments");
+    static_assert(static_cast<uint32_t>(FeatureName::MSAARenderToSingleSampled) == WGPUFeatureName_MSAARenderToSingleSampled, "value mismatch for FeatureName::MSAARenderToSingleSampled");
+    static_assert(static_cast<uint32_t>(FeatureName::DualSourceBlending) == WGPUFeatureName_DualSourceBlending, "value mismatch for FeatureName::DualSourceBlending");
+    static_assert(static_cast<uint32_t>(FeatureName::D3D11MultithreadProtected) == WGPUFeatureName_D3D11MultithreadProtected, "value mismatch for FeatureName::D3D11MultithreadProtected");
+    static_assert(static_cast<uint32_t>(FeatureName::ANGLETextureSharing) == WGPUFeatureName_ANGLETextureSharing, "value mismatch for FeatureName::ANGLETextureSharing");
+    static_assert(static_cast<uint32_t>(FeatureName::ChromiumExperimentalSubgroups) == WGPUFeatureName_ChromiumExperimentalSubgroups, "value mismatch for FeatureName::ChromiumExperimentalSubgroups");
+    static_assert(static_cast<uint32_t>(FeatureName::ChromiumExperimentalSubgroupUniformControlFlow) == WGPUFeatureName_ChromiumExperimentalSubgroupUniformControlFlow, "value mismatch for FeatureName::ChromiumExperimentalSubgroupUniformControlFlow");
+    static_assert(static_cast<uint32_t>(FeatureName::PixelLocalStorageCoherent) == WGPUFeatureName_PixelLocalStorageCoherent, "value mismatch for FeatureName::PixelLocalStorageCoherent");
+    static_assert(static_cast<uint32_t>(FeatureName::PixelLocalStorageNonCoherent) == WGPUFeatureName_PixelLocalStorageNonCoherent, "value mismatch for FeatureName::PixelLocalStorageNonCoherent");
+    static_assert(static_cast<uint32_t>(FeatureName::Norm16TextureFormats) == WGPUFeatureName_Norm16TextureFormats, "value mismatch for FeatureName::Norm16TextureFormats");
+    static_assert(static_cast<uint32_t>(FeatureName::MultiPlanarFormatExtendedUsages) == WGPUFeatureName_MultiPlanarFormatExtendedUsages, "value mismatch for FeatureName::MultiPlanarFormatExtendedUsages");
+    static_assert(static_cast<uint32_t>(FeatureName::MultiPlanarFormatP010) == WGPUFeatureName_MultiPlanarFormatP010, "value mismatch for FeatureName::MultiPlanarFormatP010");
+    static_assert(static_cast<uint32_t>(FeatureName::HostMappedPointer) == WGPUFeatureName_HostMappedPointer, "value mismatch for FeatureName::HostMappedPointer");
+    static_assert(static_cast<uint32_t>(FeatureName::MultiPlanarRenderTargets) == WGPUFeatureName_MultiPlanarRenderTargets, "value mismatch for FeatureName::MultiPlanarRenderTargets");
+    static_assert(static_cast<uint32_t>(FeatureName::MultiPlanarFormatNv12a) == WGPUFeatureName_MultiPlanarFormatNv12a, "value mismatch for FeatureName::MultiPlanarFormatNv12a");
+    static_assert(static_cast<uint32_t>(FeatureName::FramebufferFetch) == WGPUFeatureName_FramebufferFetch, "value mismatch for FeatureName::FramebufferFetch");
+    static_assert(static_cast<uint32_t>(FeatureName::BufferMapExtendedUsages) == WGPUFeatureName_BufferMapExtendedUsages, "value mismatch for FeatureName::BufferMapExtendedUsages");
+    static_assert(static_cast<uint32_t>(FeatureName::SharedTextureMemoryVkDedicatedAllocation) == WGPUFeatureName_SharedTextureMemoryVkDedicatedAllocation, "value mismatch for FeatureName::SharedTextureMemoryVkDedicatedAllocation");
+    static_assert(static_cast<uint32_t>(FeatureName::SharedTextureMemoryAHardwareBuffer) == WGPUFeatureName_SharedTextureMemoryAHardwareBuffer, "value mismatch for FeatureName::SharedTextureMemoryAHardwareBuffer");
+    static_assert(static_cast<uint32_t>(FeatureName::SharedTextureMemoryDmaBuf) == WGPUFeatureName_SharedTextureMemoryDmaBuf, "value mismatch for FeatureName::SharedTextureMemoryDmaBuf");
+    static_assert(static_cast<uint32_t>(FeatureName::SharedTextureMemoryOpaqueFD) == WGPUFeatureName_SharedTextureMemoryOpaqueFD, "value mismatch for FeatureName::SharedTextureMemoryOpaqueFD");
+    static_assert(static_cast<uint32_t>(FeatureName::SharedTextureMemoryZirconHandle) == WGPUFeatureName_SharedTextureMemoryZirconHandle, "value mismatch for FeatureName::SharedTextureMemoryZirconHandle");
+    static_assert(static_cast<uint32_t>(FeatureName::SharedTextureMemoryDXGISharedHandle) == WGPUFeatureName_SharedTextureMemoryDXGISharedHandle, "value mismatch for FeatureName::SharedTextureMemoryDXGISharedHandle");
+    static_assert(static_cast<uint32_t>(FeatureName::SharedTextureMemoryD3D11Texture2D) == WGPUFeatureName_SharedTextureMemoryD3D11Texture2D, "value mismatch for FeatureName::SharedTextureMemoryD3D11Texture2D");
+    static_assert(static_cast<uint32_t>(FeatureName::SharedTextureMemoryIOSurface) == WGPUFeatureName_SharedTextureMemoryIOSurface, "value mismatch for FeatureName::SharedTextureMemoryIOSurface");
+    static_assert(static_cast<uint32_t>(FeatureName::SharedTextureMemoryEGLImage) == WGPUFeatureName_SharedTextureMemoryEGLImage, "value mismatch for FeatureName::SharedTextureMemoryEGLImage");
+    static_assert(static_cast<uint32_t>(FeatureName::SharedFenceVkSemaphoreOpaqueFD) == WGPUFeatureName_SharedFenceVkSemaphoreOpaqueFD, "value mismatch for FeatureName::SharedFenceVkSemaphoreOpaqueFD");
+    static_assert(static_cast<uint32_t>(FeatureName::SharedFenceVkSemaphoreSyncFD) == WGPUFeatureName_SharedFenceVkSemaphoreSyncFD, "value mismatch for FeatureName::SharedFenceVkSemaphoreSyncFD");
+    static_assert(static_cast<uint32_t>(FeatureName::SharedFenceVkSemaphoreZirconHandle) == WGPUFeatureName_SharedFenceVkSemaphoreZirconHandle, "value mismatch for FeatureName::SharedFenceVkSemaphoreZirconHandle");
+    static_assert(static_cast<uint32_t>(FeatureName::SharedFenceDXGISharedHandle) == WGPUFeatureName_SharedFenceDXGISharedHandle, "value mismatch for FeatureName::SharedFenceDXGISharedHandle");
+    static_assert(static_cast<uint32_t>(FeatureName::SharedFenceMTLSharedEvent) == WGPUFeatureName_SharedFenceMTLSharedEvent, "value mismatch for FeatureName::SharedFenceMTLSharedEvent");
 
     // FilterMode
 
@@ -282,16 +324,13 @@ namespace wgpu {
     static_assert(static_cast<uint32_t>(LoggingType::Warning) == WGPULoggingType_Warning, "value mismatch for LoggingType::Warning");
     static_assert(static_cast<uint32_t>(LoggingType::Error) == WGPULoggingType_Error, "value mismatch for LoggingType::Error");
 
-    // PipelineStatisticName
+    // MipmapFilterMode
 
-    static_assert(sizeof(PipelineStatisticName) == sizeof(WGPUPipelineStatisticName), "sizeof mismatch for PipelineStatisticName");
-    static_assert(alignof(PipelineStatisticName) == alignof(WGPUPipelineStatisticName), "alignof mismatch for PipelineStatisticName");
+    static_assert(sizeof(MipmapFilterMode) == sizeof(WGPUMipmapFilterMode), "sizeof mismatch for MipmapFilterMode");
+    static_assert(alignof(MipmapFilterMode) == alignof(WGPUMipmapFilterMode), "alignof mismatch for MipmapFilterMode");
 
-    static_assert(static_cast<uint32_t>(PipelineStatisticName::VertexShaderInvocations) == WGPUPipelineStatisticName_VertexShaderInvocations, "value mismatch for PipelineStatisticName::VertexShaderInvocations");
-    static_assert(static_cast<uint32_t>(PipelineStatisticName::ClipperInvocations) == WGPUPipelineStatisticName_ClipperInvocations, "value mismatch for PipelineStatisticName::ClipperInvocations");
-    static_assert(static_cast<uint32_t>(PipelineStatisticName::ClipperPrimitivesOut) == WGPUPipelineStatisticName_ClipperPrimitivesOut, "value mismatch for PipelineStatisticName::ClipperPrimitivesOut");
-    static_assert(static_cast<uint32_t>(PipelineStatisticName::FragmentShaderInvocations) == WGPUPipelineStatisticName_FragmentShaderInvocations, "value mismatch for PipelineStatisticName::FragmentShaderInvocations");
-    static_assert(static_cast<uint32_t>(PipelineStatisticName::ComputeShaderInvocations) == WGPUPipelineStatisticName_ComputeShaderInvocations, "value mismatch for PipelineStatisticName::ComputeShaderInvocations");
+    static_assert(static_cast<uint32_t>(MipmapFilterMode::Nearest) == WGPUMipmapFilterMode_Nearest, "value mismatch for MipmapFilterMode::Nearest");
+    static_assert(static_cast<uint32_t>(MipmapFilterMode::Linear) == WGPUMipmapFilterMode_Linear, "value mismatch for MipmapFilterMode::Linear");
 
     // PowerPreference
 
@@ -307,9 +346,9 @@ namespace wgpu {
     static_assert(sizeof(PresentMode) == sizeof(WGPUPresentMode), "sizeof mismatch for PresentMode");
     static_assert(alignof(PresentMode) == alignof(WGPUPresentMode), "alignof mismatch for PresentMode");
 
+    static_assert(static_cast<uint32_t>(PresentMode::Fifo) == WGPUPresentMode_Fifo, "value mismatch for PresentMode::Fifo");
     static_assert(static_cast<uint32_t>(PresentMode::Immediate) == WGPUPresentMode_Immediate, "value mismatch for PresentMode::Immediate");
     static_assert(static_cast<uint32_t>(PresentMode::Mailbox) == WGPUPresentMode_Mailbox, "value mismatch for PresentMode::Mailbox");
-    static_assert(static_cast<uint32_t>(PresentMode::Fifo) == WGPUPresentMode_Fifo, "value mismatch for PresentMode::Fifo");
 
     // PrimitiveTopology
 
@@ -328,7 +367,6 @@ namespace wgpu {
     static_assert(alignof(QueryType) == alignof(WGPUQueryType), "alignof mismatch for QueryType");
 
     static_assert(static_cast<uint32_t>(QueryType::Occlusion) == WGPUQueryType_Occlusion, "value mismatch for QueryType::Occlusion");
-    static_assert(static_cast<uint32_t>(QueryType::PipelineStatistics) == WGPUQueryType_PipelineStatistics, "value mismatch for QueryType::PipelineStatistics");
     static_assert(static_cast<uint32_t>(QueryType::Timestamp) == WGPUQueryType_Timestamp, "value mismatch for QueryType::Timestamp");
 
     // QueueWorkDoneStatus
@@ -340,14 +378,6 @@ namespace wgpu {
     static_assert(static_cast<uint32_t>(QueueWorkDoneStatus::Error) == WGPUQueueWorkDoneStatus_Error, "value mismatch for QueueWorkDoneStatus::Error");
     static_assert(static_cast<uint32_t>(QueueWorkDoneStatus::Unknown) == WGPUQueueWorkDoneStatus_Unknown, "value mismatch for QueueWorkDoneStatus::Unknown");
     static_assert(static_cast<uint32_t>(QueueWorkDoneStatus::DeviceLost) == WGPUQueueWorkDoneStatus_DeviceLost, "value mismatch for QueueWorkDoneStatus::DeviceLost");
-
-    // RenderPassTimestampLocation
-
-    static_assert(sizeof(RenderPassTimestampLocation) == sizeof(WGPURenderPassTimestampLocation), "sizeof mismatch for RenderPassTimestampLocation");
-    static_assert(alignof(RenderPassTimestampLocation) == alignof(WGPURenderPassTimestampLocation), "alignof mismatch for RenderPassTimestampLocation");
-
-    static_assert(static_cast<uint32_t>(RenderPassTimestampLocation::Beginning) == WGPURenderPassTimestampLocation_Beginning, "value mismatch for RenderPassTimestampLocation::Beginning");
-    static_assert(static_cast<uint32_t>(RenderPassTimestampLocation::End) == WGPURenderPassTimestampLocation_End, "value mismatch for RenderPassTimestampLocation::End");
 
     // RequestAdapterStatus
 
@@ -388,8 +418,9 @@ namespace wgpu {
     static_assert(static_cast<uint32_t>(SType::ExternalTextureBindingLayout) == WGPUSType_ExternalTextureBindingLayout, "value mismatch for SType::ExternalTextureBindingLayout");
     static_assert(static_cast<uint32_t>(SType::SurfaceDescriptorFromWindowsSwapChainPanel) == WGPUSType_SurfaceDescriptorFromWindowsSwapChainPanel, "value mismatch for SType::SurfaceDescriptorFromWindowsSwapChainPanel");
     static_assert(static_cast<uint32_t>(SType::RenderPassDescriptorMaxDrawCount) == WGPUSType_RenderPassDescriptorMaxDrawCount, "value mismatch for SType::RenderPassDescriptorMaxDrawCount");
+    static_assert(static_cast<uint32_t>(SType::DepthStencilStateDepthWriteDefinedDawn) == WGPUSType_DepthStencilStateDepthWriteDefinedDawn, "value mismatch for SType::DepthStencilStateDepthWriteDefinedDawn");
+    static_assert(static_cast<uint32_t>(SType::TextureBindingViewDimensionDescriptor) == WGPUSType_TextureBindingViewDimensionDescriptor, "value mismatch for SType::TextureBindingViewDimensionDescriptor");
     static_assert(static_cast<uint32_t>(SType::DawnTextureInternalUsageDescriptor) == WGPUSType_DawnTextureInternalUsageDescriptor, "value mismatch for SType::DawnTextureInternalUsageDescriptor");
-    static_assert(static_cast<uint32_t>(SType::DawnTogglesDeviceDescriptor) == WGPUSType_DawnTogglesDeviceDescriptor, "value mismatch for SType::DawnTogglesDeviceDescriptor");
     static_assert(static_cast<uint32_t>(SType::DawnEncoderInternalUsageDescriptor) == WGPUSType_DawnEncoderInternalUsageDescriptor, "value mismatch for SType::DawnEncoderInternalUsageDescriptor");
     static_assert(static_cast<uint32_t>(SType::DawnInstanceDescriptor) == WGPUSType_DawnInstanceDescriptor, "value mismatch for SType::DawnInstanceDescriptor");
     static_assert(static_cast<uint32_t>(SType::DawnCacheDeviceDescriptor) == WGPUSType_DawnCacheDeviceDescriptor, "value mismatch for SType::DawnCacheDeviceDescriptor");
@@ -397,6 +428,39 @@ namespace wgpu {
     static_assert(static_cast<uint32_t>(SType::DawnBufferDescriptorErrorInfoFromWireClient) == WGPUSType_DawnBufferDescriptorErrorInfoFromWireClient, "value mismatch for SType::DawnBufferDescriptorErrorInfoFromWireClient");
     static_assert(static_cast<uint32_t>(SType::DawnTogglesDescriptor) == WGPUSType_DawnTogglesDescriptor, "value mismatch for SType::DawnTogglesDescriptor");
     static_assert(static_cast<uint32_t>(SType::DawnShaderModuleSPIRVOptionsDescriptor) == WGPUSType_DawnShaderModuleSPIRVOptionsDescriptor, "value mismatch for SType::DawnShaderModuleSPIRVOptionsDescriptor");
+    static_assert(static_cast<uint32_t>(SType::RequestAdapterOptionsLUID) == WGPUSType_RequestAdapterOptionsLUID, "value mismatch for SType::RequestAdapterOptionsLUID");
+    static_assert(static_cast<uint32_t>(SType::RequestAdapterOptionsGetGLProc) == WGPUSType_RequestAdapterOptionsGetGLProc, "value mismatch for SType::RequestAdapterOptionsGetGLProc");
+    static_assert(static_cast<uint32_t>(SType::RequestAdapterOptionsD3D11Device) == WGPUSType_RequestAdapterOptionsD3D11Device, "value mismatch for SType::RequestAdapterOptionsD3D11Device");
+    static_assert(static_cast<uint32_t>(SType::DawnMultisampleStateRenderToSingleSampled) == WGPUSType_DawnMultisampleStateRenderToSingleSampled, "value mismatch for SType::DawnMultisampleStateRenderToSingleSampled");
+    static_assert(static_cast<uint32_t>(SType::DawnRenderPassColorAttachmentRenderToSingleSampled) == WGPUSType_DawnRenderPassColorAttachmentRenderToSingleSampled, "value mismatch for SType::DawnRenderPassColorAttachmentRenderToSingleSampled");
+    static_assert(static_cast<uint32_t>(SType::RenderPassPixelLocalStorage) == WGPUSType_RenderPassPixelLocalStorage, "value mismatch for SType::RenderPassPixelLocalStorage");
+    static_assert(static_cast<uint32_t>(SType::PipelineLayoutPixelLocalStorage) == WGPUSType_PipelineLayoutPixelLocalStorage, "value mismatch for SType::PipelineLayoutPixelLocalStorage");
+    static_assert(static_cast<uint32_t>(SType::BufferHostMappedPointer) == WGPUSType_BufferHostMappedPointer, "value mismatch for SType::BufferHostMappedPointer");
+    static_assert(static_cast<uint32_t>(SType::DawnExperimentalSubgroupLimits) == WGPUSType_DawnExperimentalSubgroupLimits, "value mismatch for SType::DawnExperimentalSubgroupLimits");
+    static_assert(static_cast<uint32_t>(SType::SharedTextureMemoryVkImageDescriptor) == WGPUSType_SharedTextureMemoryVkImageDescriptor, "value mismatch for SType::SharedTextureMemoryVkImageDescriptor");
+    static_assert(static_cast<uint32_t>(SType::SharedTextureMemoryVkDedicatedAllocationDescriptor) == WGPUSType_SharedTextureMemoryVkDedicatedAllocationDescriptor, "value mismatch for SType::SharedTextureMemoryVkDedicatedAllocationDescriptor");
+    static_assert(static_cast<uint32_t>(SType::SharedTextureMemoryAHardwareBufferDescriptor) == WGPUSType_SharedTextureMemoryAHardwareBufferDescriptor, "value mismatch for SType::SharedTextureMemoryAHardwareBufferDescriptor");
+    static_assert(static_cast<uint32_t>(SType::SharedTextureMemoryDmaBufDescriptor) == WGPUSType_SharedTextureMemoryDmaBufDescriptor, "value mismatch for SType::SharedTextureMemoryDmaBufDescriptor");
+    static_assert(static_cast<uint32_t>(SType::SharedTextureMemoryOpaqueFDDescriptor) == WGPUSType_SharedTextureMemoryOpaqueFDDescriptor, "value mismatch for SType::SharedTextureMemoryOpaqueFDDescriptor");
+    static_assert(static_cast<uint32_t>(SType::SharedTextureMemoryZirconHandleDescriptor) == WGPUSType_SharedTextureMemoryZirconHandleDescriptor, "value mismatch for SType::SharedTextureMemoryZirconHandleDescriptor");
+    static_assert(static_cast<uint32_t>(SType::SharedTextureMemoryDXGISharedHandleDescriptor) == WGPUSType_SharedTextureMemoryDXGISharedHandleDescriptor, "value mismatch for SType::SharedTextureMemoryDXGISharedHandleDescriptor");
+    static_assert(static_cast<uint32_t>(SType::SharedTextureMemoryD3D11Texture2DDescriptor) == WGPUSType_SharedTextureMemoryD3D11Texture2DDescriptor, "value mismatch for SType::SharedTextureMemoryD3D11Texture2DDescriptor");
+    static_assert(static_cast<uint32_t>(SType::SharedTextureMemoryIOSurfaceDescriptor) == WGPUSType_SharedTextureMemoryIOSurfaceDescriptor, "value mismatch for SType::SharedTextureMemoryIOSurfaceDescriptor");
+    static_assert(static_cast<uint32_t>(SType::SharedTextureMemoryEGLImageDescriptor) == WGPUSType_SharedTextureMemoryEGLImageDescriptor, "value mismatch for SType::SharedTextureMemoryEGLImageDescriptor");
+    static_assert(static_cast<uint32_t>(SType::SharedTextureMemoryInitializedBeginState) == WGPUSType_SharedTextureMemoryInitializedBeginState, "value mismatch for SType::SharedTextureMemoryInitializedBeginState");
+    static_assert(static_cast<uint32_t>(SType::SharedTextureMemoryInitializedEndState) == WGPUSType_SharedTextureMemoryInitializedEndState, "value mismatch for SType::SharedTextureMemoryInitializedEndState");
+    static_assert(static_cast<uint32_t>(SType::SharedTextureMemoryVkImageLayoutBeginState) == WGPUSType_SharedTextureMemoryVkImageLayoutBeginState, "value mismatch for SType::SharedTextureMemoryVkImageLayoutBeginState");
+    static_assert(static_cast<uint32_t>(SType::SharedTextureMemoryVkImageLayoutEndState) == WGPUSType_SharedTextureMemoryVkImageLayoutEndState, "value mismatch for SType::SharedTextureMemoryVkImageLayoutEndState");
+    static_assert(static_cast<uint32_t>(SType::SharedFenceVkSemaphoreOpaqueFDDescriptor) == WGPUSType_SharedFenceVkSemaphoreOpaqueFDDescriptor, "value mismatch for SType::SharedFenceVkSemaphoreOpaqueFDDescriptor");
+    static_assert(static_cast<uint32_t>(SType::SharedFenceVkSemaphoreOpaqueFDExportInfo) == WGPUSType_SharedFenceVkSemaphoreOpaqueFDExportInfo, "value mismatch for SType::SharedFenceVkSemaphoreOpaqueFDExportInfo");
+    static_assert(static_cast<uint32_t>(SType::SharedFenceVkSemaphoreSyncFDDescriptor) == WGPUSType_SharedFenceVkSemaphoreSyncFDDescriptor, "value mismatch for SType::SharedFenceVkSemaphoreSyncFDDescriptor");
+    static_assert(static_cast<uint32_t>(SType::SharedFenceVkSemaphoreSyncFDExportInfo) == WGPUSType_SharedFenceVkSemaphoreSyncFDExportInfo, "value mismatch for SType::SharedFenceVkSemaphoreSyncFDExportInfo");
+    static_assert(static_cast<uint32_t>(SType::SharedFenceVkSemaphoreZirconHandleDescriptor) == WGPUSType_SharedFenceVkSemaphoreZirconHandleDescriptor, "value mismatch for SType::SharedFenceVkSemaphoreZirconHandleDescriptor");
+    static_assert(static_cast<uint32_t>(SType::SharedFenceVkSemaphoreZirconHandleExportInfo) == WGPUSType_SharedFenceVkSemaphoreZirconHandleExportInfo, "value mismatch for SType::SharedFenceVkSemaphoreZirconHandleExportInfo");
+    static_assert(static_cast<uint32_t>(SType::SharedFenceDXGISharedHandleDescriptor) == WGPUSType_SharedFenceDXGISharedHandleDescriptor, "value mismatch for SType::SharedFenceDXGISharedHandleDescriptor");
+    static_assert(static_cast<uint32_t>(SType::SharedFenceDXGISharedHandleExportInfo) == WGPUSType_SharedFenceDXGISharedHandleExportInfo, "value mismatch for SType::SharedFenceDXGISharedHandleExportInfo");
+    static_assert(static_cast<uint32_t>(SType::SharedFenceMTLSharedEventDescriptor) == WGPUSType_SharedFenceMTLSharedEventDescriptor, "value mismatch for SType::SharedFenceMTLSharedEventDescriptor");
+    static_assert(static_cast<uint32_t>(SType::SharedFenceMTLSharedEventExportInfo) == WGPUSType_SharedFenceMTLSharedEventExportInfo, "value mismatch for SType::SharedFenceMTLSharedEventExportInfo");
 
     // SamplerBindingType
 
@@ -407,6 +471,18 @@ namespace wgpu {
     static_assert(static_cast<uint32_t>(SamplerBindingType::Filtering) == WGPUSamplerBindingType_Filtering, "value mismatch for SamplerBindingType::Filtering");
     static_assert(static_cast<uint32_t>(SamplerBindingType::NonFiltering) == WGPUSamplerBindingType_NonFiltering, "value mismatch for SamplerBindingType::NonFiltering");
     static_assert(static_cast<uint32_t>(SamplerBindingType::Comparison) == WGPUSamplerBindingType_Comparison, "value mismatch for SamplerBindingType::Comparison");
+
+    // SharedFenceType
+
+    static_assert(sizeof(SharedFenceType) == sizeof(WGPUSharedFenceType), "sizeof mismatch for SharedFenceType");
+    static_assert(alignof(SharedFenceType) == alignof(WGPUSharedFenceType), "alignof mismatch for SharedFenceType");
+
+    static_assert(static_cast<uint32_t>(SharedFenceType::Undefined) == WGPUSharedFenceType_Undefined, "value mismatch for SharedFenceType::Undefined");
+    static_assert(static_cast<uint32_t>(SharedFenceType::VkSemaphoreOpaqueFD) == WGPUSharedFenceType_VkSemaphoreOpaqueFD, "value mismatch for SharedFenceType::VkSemaphoreOpaqueFD");
+    static_assert(static_cast<uint32_t>(SharedFenceType::VkSemaphoreSyncFD) == WGPUSharedFenceType_VkSemaphoreSyncFD, "value mismatch for SharedFenceType::VkSemaphoreSyncFD");
+    static_assert(static_cast<uint32_t>(SharedFenceType::VkSemaphoreZirconHandle) == WGPUSharedFenceType_VkSemaphoreZirconHandle, "value mismatch for SharedFenceType::VkSemaphoreZirconHandle");
+    static_assert(static_cast<uint32_t>(SharedFenceType::DXGISharedHandle) == WGPUSharedFenceType_DXGISharedHandle, "value mismatch for SharedFenceType::DXGISharedHandle");
+    static_assert(static_cast<uint32_t>(SharedFenceType::MTLSharedEvent) == WGPUSharedFenceType_MTLSharedEvent, "value mismatch for SharedFenceType::MTLSharedEvent");
 
     // StencilOperation
 
@@ -429,6 +505,8 @@ namespace wgpu {
 
     static_assert(static_cast<uint32_t>(StorageTextureAccess::Undefined) == WGPUStorageTextureAccess_Undefined, "value mismatch for StorageTextureAccess::Undefined");
     static_assert(static_cast<uint32_t>(StorageTextureAccess::WriteOnly) == WGPUStorageTextureAccess_WriteOnly, "value mismatch for StorageTextureAccess::WriteOnly");
+    static_assert(static_cast<uint32_t>(StorageTextureAccess::ReadOnly) == WGPUStorageTextureAccess_ReadOnly, "value mismatch for StorageTextureAccess::ReadOnly");
+    static_assert(static_cast<uint32_t>(StorageTextureAccess::ReadWrite) == WGPUStorageTextureAccess_ReadWrite, "value mismatch for StorageTextureAccess::ReadWrite");
 
     // StoreOp
 
@@ -449,16 +527,7 @@ namespace wgpu {
     static_assert(static_cast<uint32_t>(TextureAspect::DepthOnly) == WGPUTextureAspect_DepthOnly, "value mismatch for TextureAspect::DepthOnly");
     static_assert(static_cast<uint32_t>(TextureAspect::Plane0Only) == WGPUTextureAspect_Plane0Only, "value mismatch for TextureAspect::Plane0Only");
     static_assert(static_cast<uint32_t>(TextureAspect::Plane1Only) == WGPUTextureAspect_Plane1Only, "value mismatch for TextureAspect::Plane1Only");
-
-    // TextureComponentType
-
-    static_assert(sizeof(TextureComponentType) == sizeof(WGPUTextureComponentType), "sizeof mismatch for TextureComponentType");
-    static_assert(alignof(TextureComponentType) == alignof(WGPUTextureComponentType), "alignof mismatch for TextureComponentType");
-
-    static_assert(static_cast<uint32_t>(TextureComponentType::Float) == WGPUTextureComponentType_Float, "value mismatch for TextureComponentType::Float");
-    static_assert(static_cast<uint32_t>(TextureComponentType::Sint) == WGPUTextureComponentType_Sint, "value mismatch for TextureComponentType::Sint");
-    static_assert(static_cast<uint32_t>(TextureComponentType::Uint) == WGPUTextureComponentType_Uint, "value mismatch for TextureComponentType::Uint");
-    static_assert(static_cast<uint32_t>(TextureComponentType::DepthComparison) == WGPUTextureComponentType_DepthComparison, "value mismatch for TextureComponentType::DepthComparison");
+    static_assert(static_cast<uint32_t>(TextureAspect::Plane2Only) == WGPUTextureAspect_Plane2Only, "value mismatch for TextureAspect::Plane2Only");
 
     // TextureDimension
 
@@ -499,6 +568,7 @@ namespace wgpu {
     static_assert(static_cast<uint32_t>(TextureFormat::RGBA8Sint) == WGPUTextureFormat_RGBA8Sint, "value mismatch for TextureFormat::RGBA8Sint");
     static_assert(static_cast<uint32_t>(TextureFormat::BGRA8Unorm) == WGPUTextureFormat_BGRA8Unorm, "value mismatch for TextureFormat::BGRA8Unorm");
     static_assert(static_cast<uint32_t>(TextureFormat::BGRA8UnormSrgb) == WGPUTextureFormat_BGRA8UnormSrgb, "value mismatch for TextureFormat::BGRA8UnormSrgb");
+    static_assert(static_cast<uint32_t>(TextureFormat::RGB10A2Uint) == WGPUTextureFormat_RGB10A2Uint, "value mismatch for TextureFormat::RGB10A2Uint");
     static_assert(static_cast<uint32_t>(TextureFormat::RGB10A2Unorm) == WGPUTextureFormat_RGB10A2Unorm, "value mismatch for TextureFormat::RGB10A2Unorm");
     static_assert(static_cast<uint32_t>(TextureFormat::RG11B10Ufloat) == WGPUTextureFormat_RG11B10Ufloat, "value mismatch for TextureFormat::RG11B10Ufloat");
     static_assert(static_cast<uint32_t>(TextureFormat::RGB9E5Ufloat) == WGPUTextureFormat_RGB9E5Ufloat, "value mismatch for TextureFormat::RGB9E5Ufloat");
@@ -569,7 +639,15 @@ namespace wgpu {
     static_assert(static_cast<uint32_t>(TextureFormat::ASTC12x10UnormSrgb) == WGPUTextureFormat_ASTC12x10UnormSrgb, "value mismatch for TextureFormat::ASTC12x10UnormSrgb");
     static_assert(static_cast<uint32_t>(TextureFormat::ASTC12x12Unorm) == WGPUTextureFormat_ASTC12x12Unorm, "value mismatch for TextureFormat::ASTC12x12Unorm");
     static_assert(static_cast<uint32_t>(TextureFormat::ASTC12x12UnormSrgb) == WGPUTextureFormat_ASTC12x12UnormSrgb, "value mismatch for TextureFormat::ASTC12x12UnormSrgb");
+    static_assert(static_cast<uint32_t>(TextureFormat::R16Unorm) == WGPUTextureFormat_R16Unorm, "value mismatch for TextureFormat::R16Unorm");
+    static_assert(static_cast<uint32_t>(TextureFormat::RG16Unorm) == WGPUTextureFormat_RG16Unorm, "value mismatch for TextureFormat::RG16Unorm");
+    static_assert(static_cast<uint32_t>(TextureFormat::RGBA16Unorm) == WGPUTextureFormat_RGBA16Unorm, "value mismatch for TextureFormat::RGBA16Unorm");
+    static_assert(static_cast<uint32_t>(TextureFormat::R16Snorm) == WGPUTextureFormat_R16Snorm, "value mismatch for TextureFormat::R16Snorm");
+    static_assert(static_cast<uint32_t>(TextureFormat::RG16Snorm) == WGPUTextureFormat_RG16Snorm, "value mismatch for TextureFormat::RG16Snorm");
+    static_assert(static_cast<uint32_t>(TextureFormat::RGBA16Snorm) == WGPUTextureFormat_RGBA16Snorm, "value mismatch for TextureFormat::RGBA16Snorm");
     static_assert(static_cast<uint32_t>(TextureFormat::R8BG8Biplanar420Unorm) == WGPUTextureFormat_R8BG8Biplanar420Unorm, "value mismatch for TextureFormat::R8BG8Biplanar420Unorm");
+    static_assert(static_cast<uint32_t>(TextureFormat::R10X6BG10X6Biplanar420Unorm) == WGPUTextureFormat_R10X6BG10X6Biplanar420Unorm, "value mismatch for TextureFormat::R10X6BG10X6Biplanar420Unorm");
+    static_assert(static_cast<uint32_t>(TextureFormat::R8BG8A8Triplanar420Unorm) == WGPUTextureFormat_R8BG8A8Triplanar420Unorm, "value mismatch for TextureFormat::R8BG8A8Triplanar420Unorm");
 
     // TextureSampleType
 
@@ -632,6 +710,7 @@ namespace wgpu {
     static_assert(static_cast<uint32_t>(VertexFormat::Sint32x2) == WGPUVertexFormat_Sint32x2, "value mismatch for VertexFormat::Sint32x2");
     static_assert(static_cast<uint32_t>(VertexFormat::Sint32x3) == WGPUVertexFormat_Sint32x3, "value mismatch for VertexFormat::Sint32x3");
     static_assert(static_cast<uint32_t>(VertexFormat::Sint32x4) == WGPUVertexFormat_Sint32x4, "value mismatch for VertexFormat::Sint32x4");
+    static_assert(static_cast<uint32_t>(VertexFormat::Unorm10_10_10_2) == WGPUVertexFormat_Unorm10_10_10_2, "value mismatch for VertexFormat::Unorm10_10_10_2");
 
     // VertexStepMode
 
@@ -641,6 +720,18 @@ namespace wgpu {
     static_assert(static_cast<uint32_t>(VertexStepMode::Vertex) == WGPUVertexStepMode_Vertex, "value mismatch for VertexStepMode::Vertex");
     static_assert(static_cast<uint32_t>(VertexStepMode::Instance) == WGPUVertexStepMode_Instance, "value mismatch for VertexStepMode::Instance");
     static_assert(static_cast<uint32_t>(VertexStepMode::VertexBufferNotUsed) == WGPUVertexStepMode_VertexBufferNotUsed, "value mismatch for VertexStepMode::VertexBufferNotUsed");
+
+    // WaitStatus
+
+    static_assert(sizeof(WaitStatus) == sizeof(WGPUWaitStatus), "sizeof mismatch for WaitStatus");
+    static_assert(alignof(WaitStatus) == alignof(WGPUWaitStatus), "alignof mismatch for WaitStatus");
+
+    static_assert(static_cast<uint32_t>(WaitStatus::Success) == WGPUWaitStatus_Success, "value mismatch for WaitStatus::Success");
+    static_assert(static_cast<uint32_t>(WaitStatus::TimedOut) == WGPUWaitStatus_TimedOut, "value mismatch for WaitStatus::TimedOut");
+    static_assert(static_cast<uint32_t>(WaitStatus::UnsupportedTimeout) == WGPUWaitStatus_UnsupportedTimeout, "value mismatch for WaitStatus::UnsupportedTimeout");
+    static_assert(static_cast<uint32_t>(WaitStatus::UnsupportedCount) == WGPUWaitStatus_UnsupportedCount, "value mismatch for WaitStatus::UnsupportedCount");
+    static_assert(static_cast<uint32_t>(WaitStatus::UnsupportedMixedSources) == WGPUWaitStatus_UnsupportedMixedSources, "value mismatch for WaitStatus::UnsupportedMixedSources");
+    static_assert(static_cast<uint32_t>(WaitStatus::Unknown) == WGPUWaitStatus_Unknown, "value mismatch for WaitStatus::Unknown");
 
     // BufferUsage
 
@@ -701,7 +792,8 @@ namespace wgpu {
     static_assert(static_cast<uint32_t>(TextureUsage::TextureBinding) == WGPUTextureUsage_TextureBinding, "value mismatch for TextureUsage::TextureBinding");
     static_assert(static_cast<uint32_t>(TextureUsage::StorageBinding) == WGPUTextureUsage_StorageBinding, "value mismatch for TextureUsage::StorageBinding");
     static_assert(static_cast<uint32_t>(TextureUsage::RenderAttachment) == WGPUTextureUsage_RenderAttachment, "value mismatch for TextureUsage::RenderAttachment");
-    static_assert(static_cast<uint32_t>(TextureUsage::Present) == WGPUTextureUsage_Present, "value mismatch for TextureUsage::Present");
+    static_assert(static_cast<uint32_t>(TextureUsage::TransientAttachment) == WGPUTextureUsage_TransientAttachment, "value mismatch for TextureUsage::TransientAttachment");
+    static_assert(static_cast<uint32_t>(TextureUsage::StorageAttachment) == WGPUTextureUsage_StorageAttachment, "value mismatch for TextureUsage::StorageAttachment");
 
     // ChainedStruct
 
@@ -737,6 +829,8 @@ namespace wgpu {
             "offsetof mismatch for AdapterProperties::adapterType");
     static_assert(offsetof(AdapterProperties, backendType) == offsetof(WGPUAdapterProperties, backendType),
             "offsetof mismatch for AdapterProperties::backendType");
+    static_assert(offsetof(AdapterProperties, compatibilityMode) == offsetof(WGPUAdapterProperties, compatibilityMode),
+            "offsetof mismatch for AdapterProperties::compatibilityMode");
 
     // BindGroupEntry
 
@@ -800,6 +894,32 @@ namespace wgpu {
     static_assert(offsetof(BufferDescriptor, mappedAtCreation) == offsetof(WGPUBufferDescriptor, mappedAtCreation),
             "offsetof mismatch for BufferDescriptor::mappedAtCreation");
 
+    // BufferHostMappedPointer
+
+    static_assert(sizeof(BufferHostMappedPointer) == sizeof(WGPUBufferHostMappedPointer), "sizeof mismatch for BufferHostMappedPointer");
+    static_assert(alignof(BufferHostMappedPointer) == alignof(WGPUBufferHostMappedPointer), "alignof mismatch for BufferHostMappedPointer");
+
+    static_assert(offsetof(BufferHostMappedPointer, pointer) == offsetof(WGPUBufferHostMappedPointer, pointer),
+            "offsetof mismatch for BufferHostMappedPointer::pointer");
+    static_assert(offsetof(BufferHostMappedPointer, disposeCallback) == offsetof(WGPUBufferHostMappedPointer, disposeCallback),
+            "offsetof mismatch for BufferHostMappedPointer::disposeCallback");
+    static_assert(offsetof(BufferHostMappedPointer, userdata) == offsetof(WGPUBufferHostMappedPointer, userdata),
+            "offsetof mismatch for BufferHostMappedPointer::userdata");
+
+    // BufferMapCallbackInfo
+
+    static_assert(sizeof(BufferMapCallbackInfo) == sizeof(WGPUBufferMapCallbackInfo), "sizeof mismatch for BufferMapCallbackInfo");
+    static_assert(alignof(BufferMapCallbackInfo) == alignof(WGPUBufferMapCallbackInfo), "alignof mismatch for BufferMapCallbackInfo");
+
+    static_assert(offsetof(BufferMapCallbackInfo, nextInChain) == offsetof(WGPUBufferMapCallbackInfo, nextInChain),
+            "offsetof mismatch for BufferMapCallbackInfo::nextInChain");
+    static_assert(offsetof(BufferMapCallbackInfo, mode) == offsetof(WGPUBufferMapCallbackInfo, mode),
+            "offsetof mismatch for BufferMapCallbackInfo::mode");
+    static_assert(offsetof(BufferMapCallbackInfo, callback) == offsetof(WGPUBufferMapCallbackInfo, callback),
+            "offsetof mismatch for BufferMapCallbackInfo::callback");
+    static_assert(offsetof(BufferMapCallbackInfo, userdata) == offsetof(WGPUBufferMapCallbackInfo, userdata),
+            "offsetof mismatch for BufferMapCallbackInfo::userdata");
+
     // Color
 
     static_assert(sizeof(Color) == sizeof(WGPUColor), "sizeof mismatch for Color");
@@ -860,17 +980,17 @@ namespace wgpu {
     static_assert(offsetof(CompilationMessage, utf16Length) == offsetof(WGPUCompilationMessage, utf16Length),
             "offsetof mismatch for CompilationMessage::utf16Length");
 
-    // ComputePassTimestampWrite
+    // ComputePassTimestampWrites
 
-    static_assert(sizeof(ComputePassTimestampWrite) == sizeof(WGPUComputePassTimestampWrite), "sizeof mismatch for ComputePassTimestampWrite");
-    static_assert(alignof(ComputePassTimestampWrite) == alignof(WGPUComputePassTimestampWrite), "alignof mismatch for ComputePassTimestampWrite");
+    static_assert(sizeof(ComputePassTimestampWrites) == sizeof(WGPUComputePassTimestampWrites), "sizeof mismatch for ComputePassTimestampWrites");
+    static_assert(alignof(ComputePassTimestampWrites) == alignof(WGPUComputePassTimestampWrites), "alignof mismatch for ComputePassTimestampWrites");
 
-    static_assert(offsetof(ComputePassTimestampWrite, querySet) == offsetof(WGPUComputePassTimestampWrite, querySet),
-            "offsetof mismatch for ComputePassTimestampWrite::querySet");
-    static_assert(offsetof(ComputePassTimestampWrite, queryIndex) == offsetof(WGPUComputePassTimestampWrite, queryIndex),
-            "offsetof mismatch for ComputePassTimestampWrite::queryIndex");
-    static_assert(offsetof(ComputePassTimestampWrite, location) == offsetof(WGPUComputePassTimestampWrite, location),
-            "offsetof mismatch for ComputePassTimestampWrite::location");
+    static_assert(offsetof(ComputePassTimestampWrites, querySet) == offsetof(WGPUComputePassTimestampWrites, querySet),
+            "offsetof mismatch for ComputePassTimestampWrites::querySet");
+    static_assert(offsetof(ComputePassTimestampWrites, beginningOfPassWriteIndex) == offsetof(WGPUComputePassTimestampWrites, beginningOfPassWriteIndex),
+            "offsetof mismatch for ComputePassTimestampWrites::beginningOfPassWriteIndex");
+    static_assert(offsetof(ComputePassTimestampWrites, endOfPassWriteIndex) == offsetof(WGPUComputePassTimestampWrites, endOfPassWriteIndex),
+            "offsetof mismatch for ComputePassTimestampWrites::endOfPassWriteIndex");
 
     // ConstantEntry
 
@@ -940,15 +1060,31 @@ namespace wgpu {
     static_assert(offsetof(DawnEncoderInternalUsageDescriptor, useInternalUsages) == offsetof(WGPUDawnEncoderInternalUsageDescriptor, useInternalUsages),
             "offsetof mismatch for DawnEncoderInternalUsageDescriptor::useInternalUsages");
 
-    // DawnInstanceDescriptor
+    // DawnExperimentalSubgroupLimits
 
-    static_assert(sizeof(DawnInstanceDescriptor) == sizeof(WGPUDawnInstanceDescriptor), "sizeof mismatch for DawnInstanceDescriptor");
-    static_assert(alignof(DawnInstanceDescriptor) == alignof(WGPUDawnInstanceDescriptor), "alignof mismatch for DawnInstanceDescriptor");
+    static_assert(sizeof(DawnExperimentalSubgroupLimits) == sizeof(WGPUDawnExperimentalSubgroupLimits), "sizeof mismatch for DawnExperimentalSubgroupLimits");
+    static_assert(alignof(DawnExperimentalSubgroupLimits) == alignof(WGPUDawnExperimentalSubgroupLimits), "alignof mismatch for DawnExperimentalSubgroupLimits");
 
-    static_assert(offsetof(DawnInstanceDescriptor, additionalRuntimeSearchPathsCount) == offsetof(WGPUDawnInstanceDescriptor, additionalRuntimeSearchPathsCount),
-            "offsetof mismatch for DawnInstanceDescriptor::additionalRuntimeSearchPathsCount");
-    static_assert(offsetof(DawnInstanceDescriptor, additionalRuntimeSearchPaths) == offsetof(WGPUDawnInstanceDescriptor, additionalRuntimeSearchPaths),
-            "offsetof mismatch for DawnInstanceDescriptor::additionalRuntimeSearchPaths");
+    static_assert(offsetof(DawnExperimentalSubgroupLimits, minSubgroupSize) == offsetof(WGPUDawnExperimentalSubgroupLimits, minSubgroupSize),
+            "offsetof mismatch for DawnExperimentalSubgroupLimits::minSubgroupSize");
+    static_assert(offsetof(DawnExperimentalSubgroupLimits, maxSubgroupSize) == offsetof(WGPUDawnExperimentalSubgroupLimits, maxSubgroupSize),
+            "offsetof mismatch for DawnExperimentalSubgroupLimits::maxSubgroupSize");
+
+    // DawnMultisampleStateRenderToSingleSampled
+
+    static_assert(sizeof(DawnMultisampleStateRenderToSingleSampled) == sizeof(WGPUDawnMultisampleStateRenderToSingleSampled), "sizeof mismatch for DawnMultisampleStateRenderToSingleSampled");
+    static_assert(alignof(DawnMultisampleStateRenderToSingleSampled) == alignof(WGPUDawnMultisampleStateRenderToSingleSampled), "alignof mismatch for DawnMultisampleStateRenderToSingleSampled");
+
+    static_assert(offsetof(DawnMultisampleStateRenderToSingleSampled, enabled) == offsetof(WGPUDawnMultisampleStateRenderToSingleSampled, enabled),
+            "offsetof mismatch for DawnMultisampleStateRenderToSingleSampled::enabled");
+
+    // DawnRenderPassColorAttachmentRenderToSingleSampled
+
+    static_assert(sizeof(DawnRenderPassColorAttachmentRenderToSingleSampled) == sizeof(WGPUDawnRenderPassColorAttachmentRenderToSingleSampled), "sizeof mismatch for DawnRenderPassColorAttachmentRenderToSingleSampled");
+    static_assert(alignof(DawnRenderPassColorAttachmentRenderToSingleSampled) == alignof(WGPUDawnRenderPassColorAttachmentRenderToSingleSampled), "alignof mismatch for DawnRenderPassColorAttachmentRenderToSingleSampled");
+
+    static_assert(offsetof(DawnRenderPassColorAttachmentRenderToSingleSampled, implicitSampleCount) == offsetof(WGPUDawnRenderPassColorAttachmentRenderToSingleSampled, implicitSampleCount),
+            "offsetof mismatch for DawnRenderPassColorAttachmentRenderToSingleSampled::implicitSampleCount");
 
     // DawnShaderModuleSPIRVOptionsDescriptor
 
@@ -971,28 +1107,22 @@ namespace wgpu {
     static_assert(sizeof(DawnTogglesDescriptor) == sizeof(WGPUDawnTogglesDescriptor), "sizeof mismatch for DawnTogglesDescriptor");
     static_assert(alignof(DawnTogglesDescriptor) == alignof(WGPUDawnTogglesDescriptor), "alignof mismatch for DawnTogglesDescriptor");
 
-    static_assert(offsetof(DawnTogglesDescriptor, enabledTogglesCount) == offsetof(WGPUDawnTogglesDescriptor, enabledTogglesCount),
-            "offsetof mismatch for DawnTogglesDescriptor::enabledTogglesCount");
+    static_assert(offsetof(DawnTogglesDescriptor, enabledToggleCount) == offsetof(WGPUDawnTogglesDescriptor, enabledToggleCount),
+            "offsetof mismatch for DawnTogglesDescriptor::enabledToggleCount");
     static_assert(offsetof(DawnTogglesDescriptor, enabledToggles) == offsetof(WGPUDawnTogglesDescriptor, enabledToggles),
             "offsetof mismatch for DawnTogglesDescriptor::enabledToggles");
-    static_assert(offsetof(DawnTogglesDescriptor, disabledTogglesCount) == offsetof(WGPUDawnTogglesDescriptor, disabledTogglesCount),
-            "offsetof mismatch for DawnTogglesDescriptor::disabledTogglesCount");
+    static_assert(offsetof(DawnTogglesDescriptor, disabledToggleCount) == offsetof(WGPUDawnTogglesDescriptor, disabledToggleCount),
+            "offsetof mismatch for DawnTogglesDescriptor::disabledToggleCount");
     static_assert(offsetof(DawnTogglesDescriptor, disabledToggles) == offsetof(WGPUDawnTogglesDescriptor, disabledToggles),
             "offsetof mismatch for DawnTogglesDescriptor::disabledToggles");
 
-    // DawnTogglesDeviceDescriptor
+    // DepthStencilStateDepthWriteDefinedDawn
 
-    static_assert(sizeof(DawnTogglesDeviceDescriptor) == sizeof(WGPUDawnTogglesDeviceDescriptor), "sizeof mismatch for DawnTogglesDeviceDescriptor");
-    static_assert(alignof(DawnTogglesDeviceDescriptor) == alignof(WGPUDawnTogglesDeviceDescriptor), "alignof mismatch for DawnTogglesDeviceDescriptor");
+    static_assert(sizeof(DepthStencilStateDepthWriteDefinedDawn) == sizeof(WGPUDepthStencilStateDepthWriteDefinedDawn), "sizeof mismatch for DepthStencilStateDepthWriteDefinedDawn");
+    static_assert(alignof(DepthStencilStateDepthWriteDefinedDawn) == alignof(WGPUDepthStencilStateDepthWriteDefinedDawn), "alignof mismatch for DepthStencilStateDepthWriteDefinedDawn");
 
-    static_assert(offsetof(DawnTogglesDeviceDescriptor, forceEnabledTogglesCount) == offsetof(WGPUDawnTogglesDeviceDescriptor, forceEnabledTogglesCount),
-            "offsetof mismatch for DawnTogglesDeviceDescriptor::forceEnabledTogglesCount");
-    static_assert(offsetof(DawnTogglesDeviceDescriptor, forceEnabledToggles) == offsetof(WGPUDawnTogglesDeviceDescriptor, forceEnabledToggles),
-            "offsetof mismatch for DawnTogglesDeviceDescriptor::forceEnabledToggles");
-    static_assert(offsetof(DawnTogglesDeviceDescriptor, forceDisabledTogglesCount) == offsetof(WGPUDawnTogglesDeviceDescriptor, forceDisabledTogglesCount),
-            "offsetof mismatch for DawnTogglesDeviceDescriptor::forceDisabledTogglesCount");
-    static_assert(offsetof(DawnTogglesDeviceDescriptor, forceDisabledToggles) == offsetof(WGPUDawnTogglesDeviceDescriptor, forceDisabledToggles),
-            "offsetof mismatch for DawnTogglesDeviceDescriptor::forceDisabledToggles");
+    static_assert(offsetof(DepthStencilStateDepthWriteDefinedDawn, depthWriteDefined) == offsetof(WGPUDepthStencilStateDepthWriteDefinedDawn, depthWriteDefined),
+            "offsetof mismatch for DepthStencilStateDepthWriteDefinedDawn::depthWriteDefined");
 
     // Extent2D
 
@@ -1030,13 +1160,25 @@ namespace wgpu {
     static_assert(alignof(ExternalTextureBindingLayout) == alignof(WGPUExternalTextureBindingLayout), "alignof mismatch for ExternalTextureBindingLayout");
 
 
-    // InstanceDescriptor
+    // Future
 
-    static_assert(sizeof(InstanceDescriptor) == sizeof(WGPUInstanceDescriptor), "sizeof mismatch for InstanceDescriptor");
-    static_assert(alignof(InstanceDescriptor) == alignof(WGPUInstanceDescriptor), "alignof mismatch for InstanceDescriptor");
+    static_assert(sizeof(Future) == sizeof(WGPUFuture), "sizeof mismatch for Future");
+    static_assert(alignof(Future) == alignof(WGPUFuture), "alignof mismatch for Future");
 
-    static_assert(offsetof(InstanceDescriptor, nextInChain) == offsetof(WGPUInstanceDescriptor, nextInChain),
-            "offsetof mismatch for InstanceDescriptor::nextInChain");
+    static_assert(offsetof(Future, id) == offsetof(WGPUFuture, id),
+            "offsetof mismatch for Future::id");
+
+    // InstanceFeatures
+
+    static_assert(sizeof(InstanceFeatures) == sizeof(WGPUInstanceFeatures), "sizeof mismatch for InstanceFeatures");
+    static_assert(alignof(InstanceFeatures) == alignof(WGPUInstanceFeatures), "alignof mismatch for InstanceFeatures");
+
+    static_assert(offsetof(InstanceFeatures, nextInChain) == offsetof(WGPUInstanceFeatures, nextInChain),
+            "offsetof mismatch for InstanceFeatures::nextInChain");
+    static_assert(offsetof(InstanceFeatures, timedWaitAnyEnable) == offsetof(WGPUInstanceFeatures, timedWaitAnyEnable),
+            "offsetof mismatch for InstanceFeatures::timedWaitAnyEnable");
+    static_assert(offsetof(InstanceFeatures, timedWaitAnyMaxCount) == offsetof(WGPUInstanceFeatures, timedWaitAnyMaxCount),
+            "offsetof mismatch for InstanceFeatures::timedWaitAnyMaxCount");
 
     // Limits
 
@@ -1053,6 +1195,8 @@ namespace wgpu {
             "offsetof mismatch for Limits::maxTextureArrayLayers");
     static_assert(offsetof(Limits, maxBindGroups) == offsetof(WGPULimits, maxBindGroups),
             "offsetof mismatch for Limits::maxBindGroups");
+    static_assert(offsetof(Limits, maxBindGroupsPlusVertexBuffers) == offsetof(WGPULimits, maxBindGroupsPlusVertexBuffers),
+            "offsetof mismatch for Limits::maxBindGroupsPlusVertexBuffers");
     static_assert(offsetof(Limits, maxBindingsPerBindGroup) == offsetof(WGPULimits, maxBindingsPerBindGroup),
             "offsetof mismatch for Limits::maxBindingsPerBindGroup");
     static_assert(offsetof(Limits, maxDynamicUniformBuffersPerPipelineLayout) == offsetof(WGPULimits, maxDynamicUniformBuffersPerPipelineLayout),
@@ -1105,8 +1249,6 @@ namespace wgpu {
             "offsetof mismatch for Limits::maxComputeWorkgroupSizeZ");
     static_assert(offsetof(Limits, maxComputeWorkgroupsPerDimension) == offsetof(WGPULimits, maxComputeWorkgroupsPerDimension),
             "offsetof mismatch for Limits::maxComputeWorkgroupsPerDimension");
-    static_assert(offsetof(Limits, maxFragmentCombinedOutputResources) == offsetof(WGPULimits, maxFragmentCombinedOutputResources),
-            "offsetof mismatch for Limits::maxFragmentCombinedOutputResources");
 
     // MultisampleState
 
@@ -1158,6 +1300,18 @@ namespace wgpu {
     static_assert(offsetof(PipelineLayoutDescriptor, bindGroupLayouts) == offsetof(WGPUPipelineLayoutDescriptor, bindGroupLayouts),
             "offsetof mismatch for PipelineLayoutDescriptor::bindGroupLayouts");
 
+    // PipelineLayoutStorageAttachment
+
+    static_assert(sizeof(PipelineLayoutStorageAttachment) == sizeof(WGPUPipelineLayoutStorageAttachment), "sizeof mismatch for PipelineLayoutStorageAttachment");
+    static_assert(alignof(PipelineLayoutStorageAttachment) == alignof(WGPUPipelineLayoutStorageAttachment), "alignof mismatch for PipelineLayoutStorageAttachment");
+
+    static_assert(offsetof(PipelineLayoutStorageAttachment, nextInChain) == offsetof(WGPUPipelineLayoutStorageAttachment, nextInChain),
+            "offsetof mismatch for PipelineLayoutStorageAttachment::nextInChain");
+    static_assert(offsetof(PipelineLayoutStorageAttachment, offset) == offsetof(WGPUPipelineLayoutStorageAttachment, offset),
+            "offsetof mismatch for PipelineLayoutStorageAttachment::offset");
+    static_assert(offsetof(PipelineLayoutStorageAttachment, format) == offsetof(WGPUPipelineLayoutStorageAttachment, format),
+            "offsetof mismatch for PipelineLayoutStorageAttachment::format");
+
     // PrimitiveDepthClipControl
 
     static_assert(sizeof(PrimitiveDepthClipControl) == sizeof(WGPUPrimitiveDepthClipControl), "sizeof mismatch for PrimitiveDepthClipControl");
@@ -1195,10 +1349,6 @@ namespace wgpu {
             "offsetof mismatch for QuerySetDescriptor::type");
     static_assert(offsetof(QuerySetDescriptor, count) == offsetof(WGPUQuerySetDescriptor, count),
             "offsetof mismatch for QuerySetDescriptor::count");
-    static_assert(offsetof(QuerySetDescriptor, pipelineStatistics) == offsetof(WGPUQuerySetDescriptor, pipelineStatistics),
-            "offsetof mismatch for QuerySetDescriptor::pipelineStatistics");
-    static_assert(offsetof(QuerySetDescriptor, pipelineStatisticsCount) == offsetof(WGPUQuerySetDescriptor, pipelineStatisticsCount),
-            "offsetof mismatch for QuerySetDescriptor::pipelineStatisticsCount");
 
     // QueueDescriptor
 
@@ -1209,6 +1359,20 @@ namespace wgpu {
             "offsetof mismatch for QueueDescriptor::nextInChain");
     static_assert(offsetof(QueueDescriptor, label) == offsetof(WGPUQueueDescriptor, label),
             "offsetof mismatch for QueueDescriptor::label");
+
+    // QueueWorkDoneCallbackInfo
+
+    static_assert(sizeof(QueueWorkDoneCallbackInfo) == sizeof(WGPUQueueWorkDoneCallbackInfo), "sizeof mismatch for QueueWorkDoneCallbackInfo");
+    static_assert(alignof(QueueWorkDoneCallbackInfo) == alignof(WGPUQueueWorkDoneCallbackInfo), "alignof mismatch for QueueWorkDoneCallbackInfo");
+
+    static_assert(offsetof(QueueWorkDoneCallbackInfo, nextInChain) == offsetof(WGPUQueueWorkDoneCallbackInfo, nextInChain),
+            "offsetof mismatch for QueueWorkDoneCallbackInfo::nextInChain");
+    static_assert(offsetof(QueueWorkDoneCallbackInfo, mode) == offsetof(WGPUQueueWorkDoneCallbackInfo, mode),
+            "offsetof mismatch for QueueWorkDoneCallbackInfo::mode");
+    static_assert(offsetof(QueueWorkDoneCallbackInfo, callback) == offsetof(WGPUQueueWorkDoneCallbackInfo, callback),
+            "offsetof mismatch for QueueWorkDoneCallbackInfo::callback");
+    static_assert(offsetof(QueueWorkDoneCallbackInfo, userdata) == offsetof(WGPUQueueWorkDoneCallbackInfo, userdata),
+            "offsetof mismatch for QueueWorkDoneCallbackInfo::userdata");
 
     // RenderBundleDescriptor
 
@@ -1229,8 +1393,8 @@ namespace wgpu {
             "offsetof mismatch for RenderBundleEncoderDescriptor::nextInChain");
     static_assert(offsetof(RenderBundleEncoderDescriptor, label) == offsetof(WGPURenderBundleEncoderDescriptor, label),
             "offsetof mismatch for RenderBundleEncoderDescriptor::label");
-    static_assert(offsetof(RenderBundleEncoderDescriptor, colorFormatsCount) == offsetof(WGPURenderBundleEncoderDescriptor, colorFormatsCount),
-            "offsetof mismatch for RenderBundleEncoderDescriptor::colorFormatsCount");
+    static_assert(offsetof(RenderBundleEncoderDescriptor, colorFormatCount) == offsetof(WGPURenderBundleEncoderDescriptor, colorFormatCount),
+            "offsetof mismatch for RenderBundleEncoderDescriptor::colorFormatCount");
     static_assert(offsetof(RenderBundleEncoderDescriptor, colorFormats) == offsetof(WGPURenderBundleEncoderDescriptor, colorFormats),
             "offsetof mismatch for RenderBundleEncoderDescriptor::colorFormats");
     static_assert(offsetof(RenderBundleEncoderDescriptor, depthStencilFormat) == offsetof(WGPURenderBundleEncoderDescriptor, depthStencilFormat),
@@ -1274,17 +1438,31 @@ namespace wgpu {
     static_assert(offsetof(RenderPassDescriptorMaxDrawCount, maxDrawCount) == offsetof(WGPURenderPassDescriptorMaxDrawCount, maxDrawCount),
             "offsetof mismatch for RenderPassDescriptorMaxDrawCount::maxDrawCount");
 
-    // RenderPassTimestampWrite
+    // RenderPassTimestampWrites
 
-    static_assert(sizeof(RenderPassTimestampWrite) == sizeof(WGPURenderPassTimestampWrite), "sizeof mismatch for RenderPassTimestampWrite");
-    static_assert(alignof(RenderPassTimestampWrite) == alignof(WGPURenderPassTimestampWrite), "alignof mismatch for RenderPassTimestampWrite");
+    static_assert(sizeof(RenderPassTimestampWrites) == sizeof(WGPURenderPassTimestampWrites), "sizeof mismatch for RenderPassTimestampWrites");
+    static_assert(alignof(RenderPassTimestampWrites) == alignof(WGPURenderPassTimestampWrites), "alignof mismatch for RenderPassTimestampWrites");
 
-    static_assert(offsetof(RenderPassTimestampWrite, querySet) == offsetof(WGPURenderPassTimestampWrite, querySet),
-            "offsetof mismatch for RenderPassTimestampWrite::querySet");
-    static_assert(offsetof(RenderPassTimestampWrite, queryIndex) == offsetof(WGPURenderPassTimestampWrite, queryIndex),
-            "offsetof mismatch for RenderPassTimestampWrite::queryIndex");
-    static_assert(offsetof(RenderPassTimestampWrite, location) == offsetof(WGPURenderPassTimestampWrite, location),
-            "offsetof mismatch for RenderPassTimestampWrite::location");
+    static_assert(offsetof(RenderPassTimestampWrites, querySet) == offsetof(WGPURenderPassTimestampWrites, querySet),
+            "offsetof mismatch for RenderPassTimestampWrites::querySet");
+    static_assert(offsetof(RenderPassTimestampWrites, beginningOfPassWriteIndex) == offsetof(WGPURenderPassTimestampWrites, beginningOfPassWriteIndex),
+            "offsetof mismatch for RenderPassTimestampWrites::beginningOfPassWriteIndex");
+    static_assert(offsetof(RenderPassTimestampWrites, endOfPassWriteIndex) == offsetof(WGPURenderPassTimestampWrites, endOfPassWriteIndex),
+            "offsetof mismatch for RenderPassTimestampWrites::endOfPassWriteIndex");
+
+    // RequestAdapterCallbackInfo
+
+    static_assert(sizeof(RequestAdapterCallbackInfo) == sizeof(WGPURequestAdapterCallbackInfo), "sizeof mismatch for RequestAdapterCallbackInfo");
+    static_assert(alignof(RequestAdapterCallbackInfo) == alignof(WGPURequestAdapterCallbackInfo), "alignof mismatch for RequestAdapterCallbackInfo");
+
+    static_assert(offsetof(RequestAdapterCallbackInfo, nextInChain) == offsetof(WGPURequestAdapterCallbackInfo, nextInChain),
+            "offsetof mismatch for RequestAdapterCallbackInfo::nextInChain");
+    static_assert(offsetof(RequestAdapterCallbackInfo, mode) == offsetof(WGPURequestAdapterCallbackInfo, mode),
+            "offsetof mismatch for RequestAdapterCallbackInfo::mode");
+    static_assert(offsetof(RequestAdapterCallbackInfo, callback) == offsetof(WGPURequestAdapterCallbackInfo, callback),
+            "offsetof mismatch for RequestAdapterCallbackInfo::callback");
+    static_assert(offsetof(RequestAdapterCallbackInfo, userdata) == offsetof(WGPURequestAdapterCallbackInfo, userdata),
+            "offsetof mismatch for RequestAdapterCallbackInfo::userdata");
 
     // RequestAdapterOptions
 
@@ -1297,8 +1475,12 @@ namespace wgpu {
             "offsetof mismatch for RequestAdapterOptions::compatibleSurface");
     static_assert(offsetof(RequestAdapterOptions, powerPreference) == offsetof(WGPURequestAdapterOptions, powerPreference),
             "offsetof mismatch for RequestAdapterOptions::powerPreference");
+    static_assert(offsetof(RequestAdapterOptions, backendType) == offsetof(WGPURequestAdapterOptions, backendType),
+            "offsetof mismatch for RequestAdapterOptions::backendType");
     static_assert(offsetof(RequestAdapterOptions, forceFallbackAdapter) == offsetof(WGPURequestAdapterOptions, forceFallbackAdapter),
             "offsetof mismatch for RequestAdapterOptions::forceFallbackAdapter");
+    static_assert(offsetof(RequestAdapterOptions, compatibilityMode) == offsetof(WGPURequestAdapterOptions, compatibilityMode),
+            "offsetof mismatch for RequestAdapterOptions::compatibilityMode");
 
     // SamplerBindingLayout
 
@@ -1365,8 +1547,248 @@ namespace wgpu {
     static_assert(sizeof(ShaderModuleWGSLDescriptor) == sizeof(WGPUShaderModuleWGSLDescriptor), "sizeof mismatch for ShaderModuleWGSLDescriptor");
     static_assert(alignof(ShaderModuleWGSLDescriptor) == alignof(WGPUShaderModuleWGSLDescriptor), "alignof mismatch for ShaderModuleWGSLDescriptor");
 
-    static_assert(offsetof(ShaderModuleWGSLDescriptor, source) == offsetof(WGPUShaderModuleWGSLDescriptor, source),
-            "offsetof mismatch for ShaderModuleWGSLDescriptor::source");
+    static_assert(offsetof(ShaderModuleWGSLDescriptor, code) == offsetof(WGPUShaderModuleWGSLDescriptor, code),
+            "offsetof mismatch for ShaderModuleWGSLDescriptor::code");
+
+    // SharedFenceDescriptor
+
+    static_assert(sizeof(SharedFenceDescriptor) == sizeof(WGPUSharedFenceDescriptor), "sizeof mismatch for SharedFenceDescriptor");
+    static_assert(alignof(SharedFenceDescriptor) == alignof(WGPUSharedFenceDescriptor), "alignof mismatch for SharedFenceDescriptor");
+
+    static_assert(offsetof(SharedFenceDescriptor, nextInChain) == offsetof(WGPUSharedFenceDescriptor, nextInChain),
+            "offsetof mismatch for SharedFenceDescriptor::nextInChain");
+    static_assert(offsetof(SharedFenceDescriptor, label) == offsetof(WGPUSharedFenceDescriptor, label),
+            "offsetof mismatch for SharedFenceDescriptor::label");
+
+    // SharedFenceDXGISharedHandleDescriptor
+
+    static_assert(sizeof(SharedFenceDXGISharedHandleDescriptor) == sizeof(WGPUSharedFenceDXGISharedHandleDescriptor), "sizeof mismatch for SharedFenceDXGISharedHandleDescriptor");
+    static_assert(alignof(SharedFenceDXGISharedHandleDescriptor) == alignof(WGPUSharedFenceDXGISharedHandleDescriptor), "alignof mismatch for SharedFenceDXGISharedHandleDescriptor");
+
+    static_assert(offsetof(SharedFenceDXGISharedHandleDescriptor, handle) == offsetof(WGPUSharedFenceDXGISharedHandleDescriptor, handle),
+            "offsetof mismatch for SharedFenceDXGISharedHandleDescriptor::handle");
+
+    // SharedFenceDXGISharedHandleExportInfo
+
+    static_assert(sizeof(SharedFenceDXGISharedHandleExportInfo) == sizeof(WGPUSharedFenceDXGISharedHandleExportInfo), "sizeof mismatch for SharedFenceDXGISharedHandleExportInfo");
+    static_assert(alignof(SharedFenceDXGISharedHandleExportInfo) == alignof(WGPUSharedFenceDXGISharedHandleExportInfo), "alignof mismatch for SharedFenceDXGISharedHandleExportInfo");
+
+    static_assert(offsetof(SharedFenceDXGISharedHandleExportInfo, handle) == offsetof(WGPUSharedFenceDXGISharedHandleExportInfo, handle),
+            "offsetof mismatch for SharedFenceDXGISharedHandleExportInfo::handle");
+
+    // SharedFenceExportInfo
+
+    static_assert(sizeof(SharedFenceExportInfo) == sizeof(WGPUSharedFenceExportInfo), "sizeof mismatch for SharedFenceExportInfo");
+    static_assert(alignof(SharedFenceExportInfo) == alignof(WGPUSharedFenceExportInfo), "alignof mismatch for SharedFenceExportInfo");
+
+    static_assert(offsetof(SharedFenceExportInfo, nextInChain) == offsetof(WGPUSharedFenceExportInfo, nextInChain),
+            "offsetof mismatch for SharedFenceExportInfo::nextInChain");
+    static_assert(offsetof(SharedFenceExportInfo, type) == offsetof(WGPUSharedFenceExportInfo, type),
+            "offsetof mismatch for SharedFenceExportInfo::type");
+
+    // SharedFenceMTLSharedEventDescriptor
+
+    static_assert(sizeof(SharedFenceMTLSharedEventDescriptor) == sizeof(WGPUSharedFenceMTLSharedEventDescriptor), "sizeof mismatch for SharedFenceMTLSharedEventDescriptor");
+    static_assert(alignof(SharedFenceMTLSharedEventDescriptor) == alignof(WGPUSharedFenceMTLSharedEventDescriptor), "alignof mismatch for SharedFenceMTLSharedEventDescriptor");
+
+    static_assert(offsetof(SharedFenceMTLSharedEventDescriptor, sharedEvent) == offsetof(WGPUSharedFenceMTLSharedEventDescriptor, sharedEvent),
+            "offsetof mismatch for SharedFenceMTLSharedEventDescriptor::sharedEvent");
+
+    // SharedFenceMTLSharedEventExportInfo
+
+    static_assert(sizeof(SharedFenceMTLSharedEventExportInfo) == sizeof(WGPUSharedFenceMTLSharedEventExportInfo), "sizeof mismatch for SharedFenceMTLSharedEventExportInfo");
+    static_assert(alignof(SharedFenceMTLSharedEventExportInfo) == alignof(WGPUSharedFenceMTLSharedEventExportInfo), "alignof mismatch for SharedFenceMTLSharedEventExportInfo");
+
+    static_assert(offsetof(SharedFenceMTLSharedEventExportInfo, sharedEvent) == offsetof(WGPUSharedFenceMTLSharedEventExportInfo, sharedEvent),
+            "offsetof mismatch for SharedFenceMTLSharedEventExportInfo::sharedEvent");
+
+    // SharedFenceVkSemaphoreOpaqueFDDescriptor
+
+    static_assert(sizeof(SharedFenceVkSemaphoreOpaqueFDDescriptor) == sizeof(WGPUSharedFenceVkSemaphoreOpaqueFDDescriptor), "sizeof mismatch for SharedFenceVkSemaphoreOpaqueFDDescriptor");
+    static_assert(alignof(SharedFenceVkSemaphoreOpaqueFDDescriptor) == alignof(WGPUSharedFenceVkSemaphoreOpaqueFDDescriptor), "alignof mismatch for SharedFenceVkSemaphoreOpaqueFDDescriptor");
+
+    static_assert(offsetof(SharedFenceVkSemaphoreOpaqueFDDescriptor, handle) == offsetof(WGPUSharedFenceVkSemaphoreOpaqueFDDescriptor, handle),
+            "offsetof mismatch for SharedFenceVkSemaphoreOpaqueFDDescriptor::handle");
+
+    // SharedFenceVkSemaphoreOpaqueFDExportInfo
+
+    static_assert(sizeof(SharedFenceVkSemaphoreOpaqueFDExportInfo) == sizeof(WGPUSharedFenceVkSemaphoreOpaqueFDExportInfo), "sizeof mismatch for SharedFenceVkSemaphoreOpaqueFDExportInfo");
+    static_assert(alignof(SharedFenceVkSemaphoreOpaqueFDExportInfo) == alignof(WGPUSharedFenceVkSemaphoreOpaqueFDExportInfo), "alignof mismatch for SharedFenceVkSemaphoreOpaqueFDExportInfo");
+
+    static_assert(offsetof(SharedFenceVkSemaphoreOpaqueFDExportInfo, handle) == offsetof(WGPUSharedFenceVkSemaphoreOpaqueFDExportInfo, handle),
+            "offsetof mismatch for SharedFenceVkSemaphoreOpaqueFDExportInfo::handle");
+
+    // SharedFenceVkSemaphoreSyncFDDescriptor
+
+    static_assert(sizeof(SharedFenceVkSemaphoreSyncFDDescriptor) == sizeof(WGPUSharedFenceVkSemaphoreSyncFDDescriptor), "sizeof mismatch for SharedFenceVkSemaphoreSyncFDDescriptor");
+    static_assert(alignof(SharedFenceVkSemaphoreSyncFDDescriptor) == alignof(WGPUSharedFenceVkSemaphoreSyncFDDescriptor), "alignof mismatch for SharedFenceVkSemaphoreSyncFDDescriptor");
+
+    static_assert(offsetof(SharedFenceVkSemaphoreSyncFDDescriptor, handle) == offsetof(WGPUSharedFenceVkSemaphoreSyncFDDescriptor, handle),
+            "offsetof mismatch for SharedFenceVkSemaphoreSyncFDDescriptor::handle");
+
+    // SharedFenceVkSemaphoreSyncFDExportInfo
+
+    static_assert(sizeof(SharedFenceVkSemaphoreSyncFDExportInfo) == sizeof(WGPUSharedFenceVkSemaphoreSyncFDExportInfo), "sizeof mismatch for SharedFenceVkSemaphoreSyncFDExportInfo");
+    static_assert(alignof(SharedFenceVkSemaphoreSyncFDExportInfo) == alignof(WGPUSharedFenceVkSemaphoreSyncFDExportInfo), "alignof mismatch for SharedFenceVkSemaphoreSyncFDExportInfo");
+
+    static_assert(offsetof(SharedFenceVkSemaphoreSyncFDExportInfo, handle) == offsetof(WGPUSharedFenceVkSemaphoreSyncFDExportInfo, handle),
+            "offsetof mismatch for SharedFenceVkSemaphoreSyncFDExportInfo::handle");
+
+    // SharedFenceVkSemaphoreZirconHandleDescriptor
+
+    static_assert(sizeof(SharedFenceVkSemaphoreZirconHandleDescriptor) == sizeof(WGPUSharedFenceVkSemaphoreZirconHandleDescriptor), "sizeof mismatch for SharedFenceVkSemaphoreZirconHandleDescriptor");
+    static_assert(alignof(SharedFenceVkSemaphoreZirconHandleDescriptor) == alignof(WGPUSharedFenceVkSemaphoreZirconHandleDescriptor), "alignof mismatch for SharedFenceVkSemaphoreZirconHandleDescriptor");
+
+    static_assert(offsetof(SharedFenceVkSemaphoreZirconHandleDescriptor, handle) == offsetof(WGPUSharedFenceVkSemaphoreZirconHandleDescriptor, handle),
+            "offsetof mismatch for SharedFenceVkSemaphoreZirconHandleDescriptor::handle");
+
+    // SharedFenceVkSemaphoreZirconHandleExportInfo
+
+    static_assert(sizeof(SharedFenceVkSemaphoreZirconHandleExportInfo) == sizeof(WGPUSharedFenceVkSemaphoreZirconHandleExportInfo), "sizeof mismatch for SharedFenceVkSemaphoreZirconHandleExportInfo");
+    static_assert(alignof(SharedFenceVkSemaphoreZirconHandleExportInfo) == alignof(WGPUSharedFenceVkSemaphoreZirconHandleExportInfo), "alignof mismatch for SharedFenceVkSemaphoreZirconHandleExportInfo");
+
+    static_assert(offsetof(SharedFenceVkSemaphoreZirconHandleExportInfo, handle) == offsetof(WGPUSharedFenceVkSemaphoreZirconHandleExportInfo, handle),
+            "offsetof mismatch for SharedFenceVkSemaphoreZirconHandleExportInfo::handle");
+
+    // SharedTextureMemoryAHardwareBufferDescriptor
+
+    static_assert(sizeof(SharedTextureMemoryAHardwareBufferDescriptor) == sizeof(WGPUSharedTextureMemoryAHardwareBufferDescriptor), "sizeof mismatch for SharedTextureMemoryAHardwareBufferDescriptor");
+    static_assert(alignof(SharedTextureMemoryAHardwareBufferDescriptor) == alignof(WGPUSharedTextureMemoryAHardwareBufferDescriptor), "alignof mismatch for SharedTextureMemoryAHardwareBufferDescriptor");
+
+    static_assert(offsetof(SharedTextureMemoryAHardwareBufferDescriptor, handle) == offsetof(WGPUSharedTextureMemoryAHardwareBufferDescriptor, handle),
+            "offsetof mismatch for SharedTextureMemoryAHardwareBufferDescriptor::handle");
+
+    // SharedTextureMemoryBeginAccessDescriptor
+
+    static_assert(sizeof(SharedTextureMemoryBeginAccessDescriptor) == sizeof(WGPUSharedTextureMemoryBeginAccessDescriptor), "sizeof mismatch for SharedTextureMemoryBeginAccessDescriptor");
+    static_assert(alignof(SharedTextureMemoryBeginAccessDescriptor) == alignof(WGPUSharedTextureMemoryBeginAccessDescriptor), "alignof mismatch for SharedTextureMemoryBeginAccessDescriptor");
+
+    static_assert(offsetof(SharedTextureMemoryBeginAccessDescriptor, nextInChain) == offsetof(WGPUSharedTextureMemoryBeginAccessDescriptor, nextInChain),
+            "offsetof mismatch for SharedTextureMemoryBeginAccessDescriptor::nextInChain");
+    static_assert(offsetof(SharedTextureMemoryBeginAccessDescriptor, initialized) == offsetof(WGPUSharedTextureMemoryBeginAccessDescriptor, initialized),
+            "offsetof mismatch for SharedTextureMemoryBeginAccessDescriptor::initialized");
+    static_assert(offsetof(SharedTextureMemoryBeginAccessDescriptor, fenceCount) == offsetof(WGPUSharedTextureMemoryBeginAccessDescriptor, fenceCount),
+            "offsetof mismatch for SharedTextureMemoryBeginAccessDescriptor::fenceCount");
+    static_assert(offsetof(SharedTextureMemoryBeginAccessDescriptor, fences) == offsetof(WGPUSharedTextureMemoryBeginAccessDescriptor, fences),
+            "offsetof mismatch for SharedTextureMemoryBeginAccessDescriptor::fences");
+    static_assert(offsetof(SharedTextureMemoryBeginAccessDescriptor, signaledValues) == offsetof(WGPUSharedTextureMemoryBeginAccessDescriptor, signaledValues),
+            "offsetof mismatch for SharedTextureMemoryBeginAccessDescriptor::signaledValues");
+
+    // SharedTextureMemoryDescriptor
+
+    static_assert(sizeof(SharedTextureMemoryDescriptor) == sizeof(WGPUSharedTextureMemoryDescriptor), "sizeof mismatch for SharedTextureMemoryDescriptor");
+    static_assert(alignof(SharedTextureMemoryDescriptor) == alignof(WGPUSharedTextureMemoryDescriptor), "alignof mismatch for SharedTextureMemoryDescriptor");
+
+    static_assert(offsetof(SharedTextureMemoryDescriptor, nextInChain) == offsetof(WGPUSharedTextureMemoryDescriptor, nextInChain),
+            "offsetof mismatch for SharedTextureMemoryDescriptor::nextInChain");
+    static_assert(offsetof(SharedTextureMemoryDescriptor, label) == offsetof(WGPUSharedTextureMemoryDescriptor, label),
+            "offsetof mismatch for SharedTextureMemoryDescriptor::label");
+
+    // SharedTextureMemoryDmaBufDescriptor
+
+    static_assert(sizeof(SharedTextureMemoryDmaBufDescriptor) == sizeof(WGPUSharedTextureMemoryDmaBufDescriptor), "sizeof mismatch for SharedTextureMemoryDmaBufDescriptor");
+    static_assert(alignof(SharedTextureMemoryDmaBufDescriptor) == alignof(WGPUSharedTextureMemoryDmaBufDescriptor), "alignof mismatch for SharedTextureMemoryDmaBufDescriptor");
+
+    static_assert(offsetof(SharedTextureMemoryDmaBufDescriptor, memoryFD) == offsetof(WGPUSharedTextureMemoryDmaBufDescriptor, memoryFD),
+            "offsetof mismatch for SharedTextureMemoryDmaBufDescriptor::memoryFD");
+    static_assert(offsetof(SharedTextureMemoryDmaBufDescriptor, allocationSize) == offsetof(WGPUSharedTextureMemoryDmaBufDescriptor, allocationSize),
+            "offsetof mismatch for SharedTextureMemoryDmaBufDescriptor::allocationSize");
+    static_assert(offsetof(SharedTextureMemoryDmaBufDescriptor, drmModifier) == offsetof(WGPUSharedTextureMemoryDmaBufDescriptor, drmModifier),
+            "offsetof mismatch for SharedTextureMemoryDmaBufDescriptor::drmModifier");
+    static_assert(offsetof(SharedTextureMemoryDmaBufDescriptor, planeCount) == offsetof(WGPUSharedTextureMemoryDmaBufDescriptor, planeCount),
+            "offsetof mismatch for SharedTextureMemoryDmaBufDescriptor::planeCount");
+    static_assert(offsetof(SharedTextureMemoryDmaBufDescriptor, planeOffsets) == offsetof(WGPUSharedTextureMemoryDmaBufDescriptor, planeOffsets),
+            "offsetof mismatch for SharedTextureMemoryDmaBufDescriptor::planeOffsets");
+    static_assert(offsetof(SharedTextureMemoryDmaBufDescriptor, planeStrides) == offsetof(WGPUSharedTextureMemoryDmaBufDescriptor, planeStrides),
+            "offsetof mismatch for SharedTextureMemoryDmaBufDescriptor::planeStrides");
+
+    // SharedTextureMemoryDXGISharedHandleDescriptor
+
+    static_assert(sizeof(SharedTextureMemoryDXGISharedHandleDescriptor) == sizeof(WGPUSharedTextureMemoryDXGISharedHandleDescriptor), "sizeof mismatch for SharedTextureMemoryDXGISharedHandleDescriptor");
+    static_assert(alignof(SharedTextureMemoryDXGISharedHandleDescriptor) == alignof(WGPUSharedTextureMemoryDXGISharedHandleDescriptor), "alignof mismatch for SharedTextureMemoryDXGISharedHandleDescriptor");
+
+    static_assert(offsetof(SharedTextureMemoryDXGISharedHandleDescriptor, handle) == offsetof(WGPUSharedTextureMemoryDXGISharedHandleDescriptor, handle),
+            "offsetof mismatch for SharedTextureMemoryDXGISharedHandleDescriptor::handle");
+
+    // SharedTextureMemoryEGLImageDescriptor
+
+    static_assert(sizeof(SharedTextureMemoryEGLImageDescriptor) == sizeof(WGPUSharedTextureMemoryEGLImageDescriptor), "sizeof mismatch for SharedTextureMemoryEGLImageDescriptor");
+    static_assert(alignof(SharedTextureMemoryEGLImageDescriptor) == alignof(WGPUSharedTextureMemoryEGLImageDescriptor), "alignof mismatch for SharedTextureMemoryEGLImageDescriptor");
+
+    static_assert(offsetof(SharedTextureMemoryEGLImageDescriptor, image) == offsetof(WGPUSharedTextureMemoryEGLImageDescriptor, image),
+            "offsetof mismatch for SharedTextureMemoryEGLImageDescriptor::image");
+
+    // SharedTextureMemoryEndAccessState
+
+    static_assert(sizeof(SharedTextureMemoryEndAccessState) == sizeof(WGPUSharedTextureMemoryEndAccessState), "sizeof mismatch for SharedTextureMemoryEndAccessState");
+    static_assert(alignof(SharedTextureMemoryEndAccessState) == alignof(WGPUSharedTextureMemoryEndAccessState), "alignof mismatch for SharedTextureMemoryEndAccessState");
+
+    static_assert(offsetof(SharedTextureMemoryEndAccessState, nextInChain) == offsetof(WGPUSharedTextureMemoryEndAccessState, nextInChain),
+            "offsetof mismatch for SharedTextureMemoryEndAccessState::nextInChain");
+    static_assert(offsetof(SharedTextureMemoryEndAccessState, initialized) == offsetof(WGPUSharedTextureMemoryEndAccessState, initialized),
+            "offsetof mismatch for SharedTextureMemoryEndAccessState::initialized");
+    static_assert(offsetof(SharedTextureMemoryEndAccessState, fenceCount) == offsetof(WGPUSharedTextureMemoryEndAccessState, fenceCount),
+            "offsetof mismatch for SharedTextureMemoryEndAccessState::fenceCount");
+    static_assert(offsetof(SharedTextureMemoryEndAccessState, fences) == offsetof(WGPUSharedTextureMemoryEndAccessState, fences),
+            "offsetof mismatch for SharedTextureMemoryEndAccessState::fences");
+    static_assert(offsetof(SharedTextureMemoryEndAccessState, signaledValues) == offsetof(WGPUSharedTextureMemoryEndAccessState, signaledValues),
+            "offsetof mismatch for SharedTextureMemoryEndAccessState::signaledValues");
+
+    // SharedTextureMemoryIOSurfaceDescriptor
+
+    static_assert(sizeof(SharedTextureMemoryIOSurfaceDescriptor) == sizeof(WGPUSharedTextureMemoryIOSurfaceDescriptor), "sizeof mismatch for SharedTextureMemoryIOSurfaceDescriptor");
+    static_assert(alignof(SharedTextureMemoryIOSurfaceDescriptor) == alignof(WGPUSharedTextureMemoryIOSurfaceDescriptor), "alignof mismatch for SharedTextureMemoryIOSurfaceDescriptor");
+
+    static_assert(offsetof(SharedTextureMemoryIOSurfaceDescriptor, ioSurface) == offsetof(WGPUSharedTextureMemoryIOSurfaceDescriptor, ioSurface),
+            "offsetof mismatch for SharedTextureMemoryIOSurfaceDescriptor::ioSurface");
+
+    // SharedTextureMemoryOpaqueFDDescriptor
+
+    static_assert(sizeof(SharedTextureMemoryOpaqueFDDescriptor) == sizeof(WGPUSharedTextureMemoryOpaqueFDDescriptor), "sizeof mismatch for SharedTextureMemoryOpaqueFDDescriptor");
+    static_assert(alignof(SharedTextureMemoryOpaqueFDDescriptor) == alignof(WGPUSharedTextureMemoryOpaqueFDDescriptor), "alignof mismatch for SharedTextureMemoryOpaqueFDDescriptor");
+
+    static_assert(offsetof(SharedTextureMemoryOpaqueFDDescriptor, memoryFD) == offsetof(WGPUSharedTextureMemoryOpaqueFDDescriptor, memoryFD),
+            "offsetof mismatch for SharedTextureMemoryOpaqueFDDescriptor::memoryFD");
+    static_assert(offsetof(SharedTextureMemoryOpaqueFDDescriptor, allocationSize) == offsetof(WGPUSharedTextureMemoryOpaqueFDDescriptor, allocationSize),
+            "offsetof mismatch for SharedTextureMemoryOpaqueFDDescriptor::allocationSize");
+
+    // SharedTextureMemoryVkDedicatedAllocationDescriptor
+
+    static_assert(sizeof(SharedTextureMemoryVkDedicatedAllocationDescriptor) == sizeof(WGPUSharedTextureMemoryVkDedicatedAllocationDescriptor), "sizeof mismatch for SharedTextureMemoryVkDedicatedAllocationDescriptor");
+    static_assert(alignof(SharedTextureMemoryVkDedicatedAllocationDescriptor) == alignof(WGPUSharedTextureMemoryVkDedicatedAllocationDescriptor), "alignof mismatch for SharedTextureMemoryVkDedicatedAllocationDescriptor");
+
+    static_assert(offsetof(SharedTextureMemoryVkDedicatedAllocationDescriptor, dedicatedAllocation) == offsetof(WGPUSharedTextureMemoryVkDedicatedAllocationDescriptor, dedicatedAllocation),
+            "offsetof mismatch for SharedTextureMemoryVkDedicatedAllocationDescriptor::dedicatedAllocation");
+
+    // SharedTextureMemoryVkImageLayoutBeginState
+
+    static_assert(sizeof(SharedTextureMemoryVkImageLayoutBeginState) == sizeof(WGPUSharedTextureMemoryVkImageLayoutBeginState), "sizeof mismatch for SharedTextureMemoryVkImageLayoutBeginState");
+    static_assert(alignof(SharedTextureMemoryVkImageLayoutBeginState) == alignof(WGPUSharedTextureMemoryVkImageLayoutBeginState), "alignof mismatch for SharedTextureMemoryVkImageLayoutBeginState");
+
+    static_assert(offsetof(SharedTextureMemoryVkImageLayoutBeginState, oldLayout) == offsetof(WGPUSharedTextureMemoryVkImageLayoutBeginState, oldLayout),
+            "offsetof mismatch for SharedTextureMemoryVkImageLayoutBeginState::oldLayout");
+    static_assert(offsetof(SharedTextureMemoryVkImageLayoutBeginState, newLayout) == offsetof(WGPUSharedTextureMemoryVkImageLayoutBeginState, newLayout),
+            "offsetof mismatch for SharedTextureMemoryVkImageLayoutBeginState::newLayout");
+
+    // SharedTextureMemoryVkImageLayoutEndState
+
+    static_assert(sizeof(SharedTextureMemoryVkImageLayoutEndState) == sizeof(WGPUSharedTextureMemoryVkImageLayoutEndState), "sizeof mismatch for SharedTextureMemoryVkImageLayoutEndState");
+    static_assert(alignof(SharedTextureMemoryVkImageLayoutEndState) == alignof(WGPUSharedTextureMemoryVkImageLayoutEndState), "alignof mismatch for SharedTextureMemoryVkImageLayoutEndState");
+
+    static_assert(offsetof(SharedTextureMemoryVkImageLayoutEndState, oldLayout) == offsetof(WGPUSharedTextureMemoryVkImageLayoutEndState, oldLayout),
+            "offsetof mismatch for SharedTextureMemoryVkImageLayoutEndState::oldLayout");
+    static_assert(offsetof(SharedTextureMemoryVkImageLayoutEndState, newLayout) == offsetof(WGPUSharedTextureMemoryVkImageLayoutEndState, newLayout),
+            "offsetof mismatch for SharedTextureMemoryVkImageLayoutEndState::newLayout");
+
+    // SharedTextureMemoryZirconHandleDescriptor
+
+    static_assert(sizeof(SharedTextureMemoryZirconHandleDescriptor) == sizeof(WGPUSharedTextureMemoryZirconHandleDescriptor), "sizeof mismatch for SharedTextureMemoryZirconHandleDescriptor");
+    static_assert(alignof(SharedTextureMemoryZirconHandleDescriptor) == alignof(WGPUSharedTextureMemoryZirconHandleDescriptor), "alignof mismatch for SharedTextureMemoryZirconHandleDescriptor");
+
+    static_assert(offsetof(SharedTextureMemoryZirconHandleDescriptor, memoryFD) == offsetof(WGPUSharedTextureMemoryZirconHandleDescriptor, memoryFD),
+            "offsetof mismatch for SharedTextureMemoryZirconHandleDescriptor::memoryFD");
+    static_assert(offsetof(SharedTextureMemoryZirconHandleDescriptor, allocationSize) == offsetof(WGPUSharedTextureMemoryZirconHandleDescriptor, allocationSize),
+            "offsetof mismatch for SharedTextureMemoryZirconHandleDescriptor::allocationSize");
 
     // StencilFaceState
 
@@ -1510,6 +1932,14 @@ namespace wgpu {
     static_assert(offsetof(TextureBindingLayout, multisampled) == offsetof(WGPUTextureBindingLayout, multisampled),
             "offsetof mismatch for TextureBindingLayout::multisampled");
 
+    // TextureBindingViewDimensionDescriptor
+
+    static_assert(sizeof(TextureBindingViewDimensionDescriptor) == sizeof(WGPUTextureBindingViewDimensionDescriptor), "sizeof mismatch for TextureBindingViewDimensionDescriptor");
+    static_assert(alignof(TextureBindingViewDimensionDescriptor) == alignof(WGPUTextureBindingViewDimensionDescriptor), "alignof mismatch for TextureBindingViewDimensionDescriptor");
+
+    static_assert(offsetof(TextureBindingViewDimensionDescriptor, textureBindingViewDimension) == offsetof(WGPUTextureBindingViewDimensionDescriptor, textureBindingViewDimension),
+            "offsetof mismatch for TextureBindingViewDimensionDescriptor::textureBindingViewDimension");
+
     // TextureDataLayout
 
     static_assert(sizeof(TextureDataLayout) == sizeof(WGPUTextureDataLayout), "sizeof mismatch for TextureDataLayout");
@@ -1627,8 +2057,6 @@ namespace wgpu {
             "offsetof mismatch for ComputePassDescriptor::nextInChain");
     static_assert(offsetof(ComputePassDescriptor, label) == offsetof(WGPUComputePassDescriptor, label),
             "offsetof mismatch for ComputePassDescriptor::label");
-    static_assert(offsetof(ComputePassDescriptor, timestampWriteCount) == offsetof(WGPUComputePassDescriptor, timestampWriteCount),
-            "offsetof mismatch for ComputePassDescriptor::timestampWriteCount");
     static_assert(offsetof(ComputePassDescriptor, timestampWrites) == offsetof(WGPUComputePassDescriptor, timestampWrites),
             "offsetof mismatch for ComputePassDescriptor::timestampWrites");
 
@@ -1692,6 +2120,16 @@ namespace wgpu {
     static_assert(offsetof(ExternalTextureDescriptor, rotation) == offsetof(WGPUExternalTextureDescriptor, rotation),
             "offsetof mismatch for ExternalTextureDescriptor::rotation");
 
+    // FutureWaitInfo
+
+    static_assert(sizeof(FutureWaitInfo) == sizeof(WGPUFutureWaitInfo), "sizeof mismatch for FutureWaitInfo");
+    static_assert(alignof(FutureWaitInfo) == alignof(WGPUFutureWaitInfo), "alignof mismatch for FutureWaitInfo");
+
+    static_assert(offsetof(FutureWaitInfo, future) == offsetof(WGPUFutureWaitInfo, future),
+            "offsetof mismatch for FutureWaitInfo::future");
+    static_assert(offsetof(FutureWaitInfo, completed) == offsetof(WGPUFutureWaitInfo, completed),
+            "offsetof mismatch for FutureWaitInfo::completed");
+
     // ImageCopyBuffer
 
     static_assert(sizeof(ImageCopyBuffer) == sizeof(WGPUImageCopyBuffer), "sizeof mismatch for ImageCopyBuffer");
@@ -1734,6 +2172,28 @@ namespace wgpu {
     static_assert(offsetof(ImageCopyTexture, aspect) == offsetof(WGPUImageCopyTexture, aspect),
             "offsetof mismatch for ImageCopyTexture::aspect");
 
+    // InstanceDescriptor
+
+    static_assert(sizeof(InstanceDescriptor) == sizeof(WGPUInstanceDescriptor), "sizeof mismatch for InstanceDescriptor");
+    static_assert(alignof(InstanceDescriptor) == alignof(WGPUInstanceDescriptor), "alignof mismatch for InstanceDescriptor");
+
+    static_assert(offsetof(InstanceDescriptor, nextInChain) == offsetof(WGPUInstanceDescriptor, nextInChain),
+            "offsetof mismatch for InstanceDescriptor::nextInChain");
+    static_assert(offsetof(InstanceDescriptor, features) == offsetof(WGPUInstanceDescriptor, features),
+            "offsetof mismatch for InstanceDescriptor::features");
+
+    // PipelineLayoutPixelLocalStorage
+
+    static_assert(sizeof(PipelineLayoutPixelLocalStorage) == sizeof(WGPUPipelineLayoutPixelLocalStorage), "sizeof mismatch for PipelineLayoutPixelLocalStorage");
+    static_assert(alignof(PipelineLayoutPixelLocalStorage) == alignof(WGPUPipelineLayoutPixelLocalStorage), "alignof mismatch for PipelineLayoutPixelLocalStorage");
+
+    static_assert(offsetof(PipelineLayoutPixelLocalStorage, totalPixelLocalStorageSize) == offsetof(WGPUPipelineLayoutPixelLocalStorage, totalPixelLocalStorageSize),
+            "offsetof mismatch for PipelineLayoutPixelLocalStorage::totalPixelLocalStorageSize");
+    static_assert(offsetof(PipelineLayoutPixelLocalStorage, storageAttachmentCount) == offsetof(WGPUPipelineLayoutPixelLocalStorage, storageAttachmentCount),
+            "offsetof mismatch for PipelineLayoutPixelLocalStorage::storageAttachmentCount");
+    static_assert(offsetof(PipelineLayoutPixelLocalStorage, storageAttachments) == offsetof(WGPUPipelineLayoutPixelLocalStorage, storageAttachments),
+            "offsetof mismatch for PipelineLayoutPixelLocalStorage::storageAttachments");
+
     // ProgrammableStageDescriptor
 
     static_assert(sizeof(ProgrammableStageDescriptor) == sizeof(WGPUProgrammableStageDescriptor), "sizeof mismatch for ProgrammableStageDescriptor");
@@ -1755,8 +2215,12 @@ namespace wgpu {
     static_assert(sizeof(RenderPassColorAttachment) == sizeof(WGPURenderPassColorAttachment), "sizeof mismatch for RenderPassColorAttachment");
     static_assert(alignof(RenderPassColorAttachment) == alignof(WGPURenderPassColorAttachment), "alignof mismatch for RenderPassColorAttachment");
 
+    static_assert(offsetof(RenderPassColorAttachment, nextInChain) == offsetof(WGPURenderPassColorAttachment, nextInChain),
+            "offsetof mismatch for RenderPassColorAttachment::nextInChain");
     static_assert(offsetof(RenderPassColorAttachment, view) == offsetof(WGPURenderPassColorAttachment, view),
             "offsetof mismatch for RenderPassColorAttachment::view");
+    static_assert(offsetof(RenderPassColorAttachment, depthSlice) == offsetof(WGPURenderPassColorAttachment, depthSlice),
+            "offsetof mismatch for RenderPassColorAttachment::depthSlice");
     static_assert(offsetof(RenderPassColorAttachment, resolveTarget) == offsetof(WGPURenderPassColorAttachment, resolveTarget),
             "offsetof mismatch for RenderPassColorAttachment::resolveTarget");
     static_assert(offsetof(RenderPassColorAttachment, loadOp) == offsetof(WGPURenderPassColorAttachment, loadOp),
@@ -1765,6 +2229,24 @@ namespace wgpu {
             "offsetof mismatch for RenderPassColorAttachment::storeOp");
     static_assert(offsetof(RenderPassColorAttachment, clearValue) == offsetof(WGPURenderPassColorAttachment, clearValue),
             "offsetof mismatch for RenderPassColorAttachment::clearValue");
+
+    // RenderPassStorageAttachment
+
+    static_assert(sizeof(RenderPassStorageAttachment) == sizeof(WGPURenderPassStorageAttachment), "sizeof mismatch for RenderPassStorageAttachment");
+    static_assert(alignof(RenderPassStorageAttachment) == alignof(WGPURenderPassStorageAttachment), "alignof mismatch for RenderPassStorageAttachment");
+
+    static_assert(offsetof(RenderPassStorageAttachment, nextInChain) == offsetof(WGPURenderPassStorageAttachment, nextInChain),
+            "offsetof mismatch for RenderPassStorageAttachment::nextInChain");
+    static_assert(offsetof(RenderPassStorageAttachment, offset) == offsetof(WGPURenderPassStorageAttachment, offset),
+            "offsetof mismatch for RenderPassStorageAttachment::offset");
+    static_assert(offsetof(RenderPassStorageAttachment, storage) == offsetof(WGPURenderPassStorageAttachment, storage),
+            "offsetof mismatch for RenderPassStorageAttachment::storage");
+    static_assert(offsetof(RenderPassStorageAttachment, loadOp) == offsetof(WGPURenderPassStorageAttachment, loadOp),
+            "offsetof mismatch for RenderPassStorageAttachment::loadOp");
+    static_assert(offsetof(RenderPassStorageAttachment, storeOp) == offsetof(WGPURenderPassStorageAttachment, storeOp),
+            "offsetof mismatch for RenderPassStorageAttachment::storeOp");
+    static_assert(offsetof(RenderPassStorageAttachment, clearValue) == offsetof(WGPURenderPassStorageAttachment, clearValue),
+            "offsetof mismatch for RenderPassStorageAttachment::clearValue");
 
     // RequiredLimits
 
@@ -1775,6 +2257,32 @@ namespace wgpu {
             "offsetof mismatch for RequiredLimits::nextInChain");
     static_assert(offsetof(RequiredLimits, limits) == offsetof(WGPURequiredLimits, limits),
             "offsetof mismatch for RequiredLimits::limits");
+
+    // SharedTextureMemoryProperties
+
+    static_assert(sizeof(SharedTextureMemoryProperties) == sizeof(WGPUSharedTextureMemoryProperties), "sizeof mismatch for SharedTextureMemoryProperties");
+    static_assert(alignof(SharedTextureMemoryProperties) == alignof(WGPUSharedTextureMemoryProperties), "alignof mismatch for SharedTextureMemoryProperties");
+
+    static_assert(offsetof(SharedTextureMemoryProperties, nextInChain) == offsetof(WGPUSharedTextureMemoryProperties, nextInChain),
+            "offsetof mismatch for SharedTextureMemoryProperties::nextInChain");
+    static_assert(offsetof(SharedTextureMemoryProperties, usage) == offsetof(WGPUSharedTextureMemoryProperties, usage),
+            "offsetof mismatch for SharedTextureMemoryProperties::usage");
+    static_assert(offsetof(SharedTextureMemoryProperties, size) == offsetof(WGPUSharedTextureMemoryProperties, size),
+            "offsetof mismatch for SharedTextureMemoryProperties::size");
+    static_assert(offsetof(SharedTextureMemoryProperties, format) == offsetof(WGPUSharedTextureMemoryProperties, format),
+            "offsetof mismatch for SharedTextureMemoryProperties::format");
+
+    // SharedTextureMemoryVkImageDescriptor
+
+    static_assert(sizeof(SharedTextureMemoryVkImageDescriptor) == sizeof(WGPUSharedTextureMemoryVkImageDescriptor), "sizeof mismatch for SharedTextureMemoryVkImageDescriptor");
+    static_assert(alignof(SharedTextureMemoryVkImageDescriptor) == alignof(WGPUSharedTextureMemoryVkImageDescriptor), "alignof mismatch for SharedTextureMemoryVkImageDescriptor");
+
+    static_assert(offsetof(SharedTextureMemoryVkImageDescriptor, vkFormat) == offsetof(WGPUSharedTextureMemoryVkImageDescriptor, vkFormat),
+            "offsetof mismatch for SharedTextureMemoryVkImageDescriptor::vkFormat");
+    static_assert(offsetof(SharedTextureMemoryVkImageDescriptor, vkUsageFlags) == offsetof(WGPUSharedTextureMemoryVkImageDescriptor, vkUsageFlags),
+            "offsetof mismatch for SharedTextureMemoryVkImageDescriptor::vkUsageFlags");
+    static_assert(offsetof(SharedTextureMemoryVkImageDescriptor, vkExtent3D) == offsetof(WGPUSharedTextureMemoryVkImageDescriptor, vkExtent3D),
+            "offsetof mismatch for SharedTextureMemoryVkImageDescriptor::vkExtent3D");
 
     // SupportedLimits
 
@@ -1877,14 +2385,18 @@ namespace wgpu {
             "offsetof mismatch for DeviceDescriptor::nextInChain");
     static_assert(offsetof(DeviceDescriptor, label) == offsetof(WGPUDeviceDescriptor, label),
             "offsetof mismatch for DeviceDescriptor::label");
-    static_assert(offsetof(DeviceDescriptor, requiredFeaturesCount) == offsetof(WGPUDeviceDescriptor, requiredFeaturesCount),
-            "offsetof mismatch for DeviceDescriptor::requiredFeaturesCount");
+    static_assert(offsetof(DeviceDescriptor, requiredFeatureCount) == offsetof(WGPUDeviceDescriptor, requiredFeatureCount),
+            "offsetof mismatch for DeviceDescriptor::requiredFeatureCount");
     static_assert(offsetof(DeviceDescriptor, requiredFeatures) == offsetof(WGPUDeviceDescriptor, requiredFeatures),
             "offsetof mismatch for DeviceDescriptor::requiredFeatures");
     static_assert(offsetof(DeviceDescriptor, requiredLimits) == offsetof(WGPUDeviceDescriptor, requiredLimits),
             "offsetof mismatch for DeviceDescriptor::requiredLimits");
     static_assert(offsetof(DeviceDescriptor, defaultQueue) == offsetof(WGPUDeviceDescriptor, defaultQueue),
             "offsetof mismatch for DeviceDescriptor::defaultQueue");
+    static_assert(offsetof(DeviceDescriptor, deviceLostCallback) == offsetof(WGPUDeviceDescriptor, deviceLostCallback),
+            "offsetof mismatch for DeviceDescriptor::deviceLostCallback");
+    static_assert(offsetof(DeviceDescriptor, deviceLostUserdata) == offsetof(WGPUDeviceDescriptor, deviceLostUserdata),
+            "offsetof mismatch for DeviceDescriptor::deviceLostUserdata");
 
     // RenderPassDescriptor
 
@@ -1903,10 +2415,20 @@ namespace wgpu {
             "offsetof mismatch for RenderPassDescriptor::depthStencilAttachment");
     static_assert(offsetof(RenderPassDescriptor, occlusionQuerySet) == offsetof(WGPURenderPassDescriptor, occlusionQuerySet),
             "offsetof mismatch for RenderPassDescriptor::occlusionQuerySet");
-    static_assert(offsetof(RenderPassDescriptor, timestampWriteCount) == offsetof(WGPURenderPassDescriptor, timestampWriteCount),
-            "offsetof mismatch for RenderPassDescriptor::timestampWriteCount");
     static_assert(offsetof(RenderPassDescriptor, timestampWrites) == offsetof(WGPURenderPassDescriptor, timestampWrites),
             "offsetof mismatch for RenderPassDescriptor::timestampWrites");
+
+    // RenderPassPixelLocalStorage
+
+    static_assert(sizeof(RenderPassPixelLocalStorage) == sizeof(WGPURenderPassPixelLocalStorage), "sizeof mismatch for RenderPassPixelLocalStorage");
+    static_assert(alignof(RenderPassPixelLocalStorage) == alignof(WGPURenderPassPixelLocalStorage), "alignof mismatch for RenderPassPixelLocalStorage");
+
+    static_assert(offsetof(RenderPassPixelLocalStorage, totalPixelLocalStorageSize) == offsetof(WGPURenderPassPixelLocalStorage, totalPixelLocalStorageSize),
+            "offsetof mismatch for RenderPassPixelLocalStorage::totalPixelLocalStorageSize");
+    static_assert(offsetof(RenderPassPixelLocalStorage, storageAttachmentCount) == offsetof(WGPURenderPassPixelLocalStorage, storageAttachmentCount),
+            "offsetof mismatch for RenderPassPixelLocalStorage::storageAttachmentCount");
+    static_assert(offsetof(RenderPassPixelLocalStorage, storageAttachments) == offsetof(WGPURenderPassPixelLocalStorage, storageAttachments),
+            "offsetof mismatch for RenderPassPixelLocalStorage::storageAttachments");
 
     // VertexState
 
@@ -1969,6 +2491,101 @@ namespace wgpu {
             "offsetof mismatch for RenderPipelineDescriptor::multisample");
     static_assert(offsetof(RenderPipelineDescriptor, fragment) == offsetof(WGPURenderPipelineDescriptor, fragment),
             "offsetof mismatch for RenderPipelineDescriptor::fragment");
+template <typename T>
+    static T& AsNonConstReference(const T& value) {
+        return const_cast<T&>(value);
+    }
+
+    // AdapterProperties
+    AdapterProperties::~AdapterProperties() {
+        if (this->vendorName != nullptr || this->architecture != nullptr || this->name != nullptr || this->driverDescription != nullptr) {
+            wgpuAdapterPropertiesFreeMembers(
+                *reinterpret_cast<WGPUAdapterProperties*>(this));
+        }
+    }
+
+    static void Reset(AdapterProperties& value) {
+        AdapterProperties defaultValue{};
+        AsNonConstReference(value.vendorID) = defaultValue.vendorID;
+        AsNonConstReference(value.vendorName) = defaultValue.vendorName;
+        AsNonConstReference(value.architecture) = defaultValue.architecture;
+        AsNonConstReference(value.deviceID) = defaultValue.deviceID;
+        AsNonConstReference(value.name) = defaultValue.name;
+        AsNonConstReference(value.driverDescription) = defaultValue.driverDescription;
+        AsNonConstReference(value.adapterType) = defaultValue.adapterType;
+        AsNonConstReference(value.backendType) = defaultValue.backendType;
+        AsNonConstReference(value.compatibilityMode) = defaultValue.compatibilityMode;
+    }
+
+    AdapterProperties::AdapterProperties(AdapterProperties&& rhs)
+    : vendorID(rhs.vendorID),
+      vendorName(rhs.vendorName),
+      architecture(rhs.architecture),
+      deviceID(rhs.deviceID),
+      name(rhs.name),
+      driverDescription(rhs.driverDescription),
+      adapterType(rhs.adapterType),
+      backendType(rhs.backendType),
+      compatibilityMode(rhs.compatibilityMode){
+        Reset(rhs);
+    }
+
+    AdapterProperties& AdapterProperties::operator=(AdapterProperties&& rhs) {
+        if (&rhs == this) {
+            return *this;
+        }
+        this->~AdapterProperties();
+        AsNonConstReference(this->vendorID) = std::move(rhs.vendorID);
+        AsNonConstReference(this->vendorName) = std::move(rhs.vendorName);
+        AsNonConstReference(this->architecture) = std::move(rhs.architecture);
+        AsNonConstReference(this->deviceID) = std::move(rhs.deviceID);
+        AsNonConstReference(this->name) = std::move(rhs.name);
+        AsNonConstReference(this->driverDescription) = std::move(rhs.driverDescription);
+        AsNonConstReference(this->adapterType) = std::move(rhs.adapterType);
+        AsNonConstReference(this->backendType) = std::move(rhs.backendType);
+        AsNonConstReference(this->compatibilityMode) = std::move(rhs.compatibilityMode);
+        Reset(rhs);
+        return *this;
+    }
+
+    // SharedTextureMemoryEndAccessState
+    SharedTextureMemoryEndAccessState::~SharedTextureMemoryEndAccessState() {
+        if (this->fences != nullptr || this->signaledValues != nullptr) {
+            wgpuSharedTextureMemoryEndAccessStateFreeMembers(
+                *reinterpret_cast<WGPUSharedTextureMemoryEndAccessState*>(this));
+        }
+    }
+
+    static void Reset(SharedTextureMemoryEndAccessState& value) {
+        SharedTextureMemoryEndAccessState defaultValue{};
+        AsNonConstReference(value.initialized) = defaultValue.initialized;
+        AsNonConstReference(value.fenceCount) = defaultValue.fenceCount;
+        AsNonConstReference(value.fences) = defaultValue.fences;
+        AsNonConstReference(value.signaledValues) = defaultValue.signaledValues;
+    }
+
+    SharedTextureMemoryEndAccessState::SharedTextureMemoryEndAccessState(SharedTextureMemoryEndAccessState&& rhs)
+    : initialized(rhs.initialized),
+      fenceCount(rhs.fenceCount),
+      fences(rhs.fences),
+      signaledValues(rhs.signaledValues){
+        Reset(rhs);
+    }
+
+    SharedTextureMemoryEndAccessState& SharedTextureMemoryEndAccessState::operator=(SharedTextureMemoryEndAccessState&& rhs) {
+        if (&rhs == this) {
+            return *this;
+        }
+        this->~SharedTextureMemoryEndAccessState();
+        AsNonConstReference(this->initialized) = std::move(rhs.initialized);
+        AsNonConstReference(this->fenceCount) = std::move(rhs.fenceCount);
+        AsNonConstReference(this->fences) = std::move(rhs.fences);
+        AsNonConstReference(this->signaledValues) = std::move(rhs.signaledValues);
+        Reset(rhs);
+        return *this;
+    }
+
+
 
     // Adapter
 
@@ -1987,19 +2604,20 @@ namespace wgpu {
         auto result = wgpuAdapterGetInstance(Get());
         return Instance::Acquire(result);
     }
-    bool Adapter::GetLimits(SupportedLimits * limits) const {
+    Bool Adapter::GetLimits(SupportedLimits * limits) const {
         auto result = wgpuAdapterGetLimits(Get(), reinterpret_cast<WGPUSupportedLimits * >(limits));
         return result;
     }
     void Adapter::GetProperties(AdapterProperties * properties) const {
+        *properties = AdapterProperties();
         wgpuAdapterGetProperties(Get(), reinterpret_cast<WGPUAdapterProperties * >(properties));
     }
-    bool Adapter::HasFeature(FeatureName feature) const {
+    Bool Adapter::HasFeature(FeatureName feature) const {
         auto result = wgpuAdapterHasFeature(Get(), static_cast<WGPUFeatureName>(feature));
         return result;
     }
     void Adapter::RequestDevice(DeviceDescriptor const * descriptor, RequestDeviceCallback callback, void * userdata) const {
-        wgpuAdapterRequestDevice(Get(), reinterpret_cast<WGPUDeviceDescriptor const * >(descriptor), callback, reinterpret_cast<void * >(userdata));
+        wgpuAdapterRequestDevice(Get(), reinterpret_cast<WGPUDeviceDescriptor const * >(descriptor), callback, userdata);
     }
     void Adapter::WGPUReference(WGPUAdapter handle) {
         if (handle != nullptr) {
@@ -2079,7 +2697,13 @@ namespace wgpu {
         return static_cast<BufferUsage>(result);
     }
     void Buffer::MapAsync(MapMode mode, size_t offset, size_t size, BufferMapCallback callback, void * userdata) const {
-        wgpuBufferMapAsync(Get(), static_cast<WGPUMapMode>(mode), offset, size, callback, reinterpret_cast<void * >(userdata));
+        wgpuBufferMapAsync(Get(), static_cast<WGPUMapMode>(mode), offset, size, callback, userdata);
+    }
+    Future Buffer::MapAsyncF(MapMode mode, size_t offset, size_t size, BufferMapCallbackInfo callbackInfo) const {
+        auto result = wgpuBufferMapAsyncF(Get(), static_cast<WGPUMapMode>(mode), offset, size, *reinterpret_cast<WGPUBufferMapCallbackInfo const*>(&callbackInfo));
+        return Future {
+            result.id
+        };
     }
     void Buffer::SetLabel(char const * label) const {
         wgpuBufferSetLabel(Get(), reinterpret_cast<char const * >(label));
@@ -2145,9 +2769,6 @@ namespace wgpu {
     void CommandEncoder::CopyTextureToTexture(ImageCopyTexture const * source, ImageCopyTexture const * destination, Extent3D const * copySize) const {
         wgpuCommandEncoderCopyTextureToTexture(Get(), reinterpret_cast<WGPUImageCopyTexture const * >(source), reinterpret_cast<WGPUImageCopyTexture const * >(destination), reinterpret_cast<WGPUExtent3D const * >(copySize));
     }
-    void CommandEncoder::CopyTextureToTextureInternal(ImageCopyTexture const * source, ImageCopyTexture const * destination, Extent3D const * copySize) const {
-        wgpuCommandEncoderCopyTextureToTextureInternal(Get(), reinterpret_cast<WGPUImageCopyTexture const * >(source), reinterpret_cast<WGPUImageCopyTexture const * >(destination), reinterpret_cast<WGPUExtent3D const * >(copySize));
-    }
     CommandBuffer CommandEncoder::Finish(CommandBufferDescriptor const * descriptor) const {
         auto result = wgpuCommandEncoderFinish(Get(), reinterpret_cast<WGPUCommandBufferDescriptor const * >(descriptor));
         return CommandBuffer::Acquire(result);
@@ -2210,7 +2831,7 @@ namespace wgpu {
     void ComputePassEncoder::PushDebugGroup(char const * groupLabel) const {
         wgpuComputePassEncoderPushDebugGroup(Get(), reinterpret_cast<char const * >(groupLabel));
     }
-    void ComputePassEncoder::SetBindGroup(uint32_t groupIndex, BindGroup const& group, uint32_t dynamicOffsetCount, uint32_t const * dynamicOffsets) const {
+    void ComputePassEncoder::SetBindGroup(uint32_t groupIndex, BindGroup const& group, size_t dynamicOffsetCount, uint32_t const * dynamicOffsets) const {
         wgpuComputePassEncoderSetBindGroup(Get(), groupIndex, group.Get(), dynamicOffsetCount, reinterpret_cast<uint32_t const * >(dynamicOffsets));
     }
     void ComputePassEncoder::SetLabel(char const * label) const {
@@ -2282,7 +2903,7 @@ namespace wgpu {
         return ComputePipeline::Acquire(result);
     }
     void Device::CreateComputePipelineAsync(ComputePipelineDescriptor const * descriptor, CreateComputePipelineAsyncCallback callback, void * userdata) const {
-        wgpuDeviceCreateComputePipelineAsync(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const * >(descriptor), callback, reinterpret_cast<void * >(userdata));
+        wgpuDeviceCreateComputePipelineAsync(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const * >(descriptor), callback, userdata);
     }
     Buffer Device::CreateErrorBuffer(BufferDescriptor const * descriptor) const {
         auto result = wgpuDeviceCreateErrorBuffer(Get(), reinterpret_cast<WGPUBufferDescriptor const * >(descriptor));
@@ -2291,6 +2912,10 @@ namespace wgpu {
     ExternalTexture Device::CreateErrorExternalTexture() const {
         auto result = wgpuDeviceCreateErrorExternalTexture(Get());
         return ExternalTexture::Acquire(result);
+    }
+    ShaderModule Device::CreateErrorShaderModule(ShaderModuleDescriptor const * descriptor, char const * errorMessage) const {
+        auto result = wgpuDeviceCreateErrorShaderModule(Get(), reinterpret_cast<WGPUShaderModuleDescriptor const * >(descriptor), reinterpret_cast<char const * >(errorMessage));
+        return ShaderModule::Acquire(result);
     }
     Texture Device::CreateErrorTexture(TextureDescriptor const * descriptor) const {
         auto result = wgpuDeviceCreateErrorTexture(Get(), reinterpret_cast<WGPUTextureDescriptor const * >(descriptor));
@@ -2317,7 +2942,7 @@ namespace wgpu {
         return RenderPipeline::Acquire(result);
     }
     void Device::CreateRenderPipelineAsync(RenderPipelineDescriptor const * descriptor, CreateRenderPipelineAsyncCallback callback, void * userdata) const {
-        wgpuDeviceCreateRenderPipelineAsync(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const * >(descriptor), callback, reinterpret_cast<void * >(userdata));
+        wgpuDeviceCreateRenderPipelineAsync(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const * >(descriptor), callback, userdata);
     }
     Sampler Device::CreateSampler(SamplerDescriptor const * descriptor) const {
         auto result = wgpuDeviceCreateSampler(Get(), reinterpret_cast<WGPUSamplerDescriptor const * >(descriptor));
@@ -2349,7 +2974,7 @@ namespace wgpu {
         auto result = wgpuDeviceGetAdapter(Get());
         return Adapter::Acquire(result);
     }
-    bool Device::GetLimits(SupportedLimits * limits) const {
+    Bool Device::GetLimits(SupportedLimits * limits) const {
         auto result = wgpuDeviceGetLimits(Get(), reinterpret_cast<WGPUSupportedLimits * >(limits));
         return result;
     }
@@ -2361,31 +2986,38 @@ namespace wgpu {
         auto result = wgpuDeviceGetSupportedSurfaceUsage(Get(), surface.Get());
         return static_cast<TextureUsage>(result);
     }
-    bool Device::HasFeature(FeatureName feature) const {
+    Bool Device::HasFeature(FeatureName feature) const {
         auto result = wgpuDeviceHasFeature(Get(), static_cast<WGPUFeatureName>(feature));
         return result;
+    }
+    SharedFence Device::ImportSharedFence(SharedFenceDescriptor const * descriptor) const {
+        auto result = wgpuDeviceImportSharedFence(Get(), reinterpret_cast<WGPUSharedFenceDescriptor const * >(descriptor));
+        return SharedFence::Acquire(result);
+    }
+    SharedTextureMemory Device::ImportSharedTextureMemory(SharedTextureMemoryDescriptor const * descriptor) const {
+        auto result = wgpuDeviceImportSharedTextureMemory(Get(), reinterpret_cast<WGPUSharedTextureMemoryDescriptor const * >(descriptor));
+        return SharedTextureMemory::Acquire(result);
     }
     void Device::InjectError(ErrorType type, char const * message) const {
         wgpuDeviceInjectError(Get(), static_cast<WGPUErrorType>(type), reinterpret_cast<char const * >(message));
     }
-    bool Device::PopErrorScope(ErrorCallback callback, void * userdata) const {
-        auto result = wgpuDevicePopErrorScope(Get(), callback, reinterpret_cast<void * >(userdata));
-        return result;
+    void Device::PopErrorScope(ErrorCallback callback, void * userdata) const {
+        wgpuDevicePopErrorScope(Get(), callback, userdata);
     }
     void Device::PushErrorScope(ErrorFilter filter) const {
         wgpuDevicePushErrorScope(Get(), static_cast<WGPUErrorFilter>(filter));
     }
     void Device::SetDeviceLostCallback(DeviceLostCallback callback, void * userdata) const {
-        wgpuDeviceSetDeviceLostCallback(Get(), callback, reinterpret_cast<void * >(userdata));
+        wgpuDeviceSetDeviceLostCallback(Get(), callback, userdata);
     }
     void Device::SetLabel(char const * label) const {
         wgpuDeviceSetLabel(Get(), reinterpret_cast<char const * >(label));
     }
     void Device::SetLoggingCallback(LoggingCallback callback, void * userdata) const {
-        wgpuDeviceSetLoggingCallback(Get(), callback, reinterpret_cast<void * >(userdata));
+        wgpuDeviceSetLoggingCallback(Get(), callback, userdata);
     }
     void Device::SetUncapturedErrorCallback(ErrorCallback callback, void * userdata) const {
-        wgpuDeviceSetUncapturedErrorCallback(Get(), callback, reinterpret_cast<void * >(userdata));
+        wgpuDeviceSetUncapturedErrorCallback(Get(), callback, userdata);
     }
     void Device::Tick() const {
         wgpuDeviceTick(Get());
@@ -2445,7 +3077,17 @@ namespace wgpu {
         wgpuInstanceProcessEvents(Get());
     }
     void Instance::RequestAdapter(RequestAdapterOptions const * options, RequestAdapterCallback callback, void * userdata) const {
-        wgpuInstanceRequestAdapter(Get(), reinterpret_cast<WGPURequestAdapterOptions const * >(options), callback, reinterpret_cast<void * >(userdata));
+        wgpuInstanceRequestAdapter(Get(), reinterpret_cast<WGPURequestAdapterOptions const * >(options), callback, userdata);
+    }
+    Future Instance::RequestAdapterF(RequestAdapterOptions const * options, RequestAdapterCallbackInfo callbackInfo) const {
+        auto result = wgpuInstanceRequestAdapterF(Get(), reinterpret_cast<WGPURequestAdapterOptions const * >(options), *reinterpret_cast<WGPURequestAdapterCallbackInfo const*>(&callbackInfo));
+        return Future {
+            result.id
+        };
+    }
+    WaitStatus Instance::WaitAny(size_t futureCount, FutureWaitInfo * futures, uint64_t timeoutNS) const {
+        auto result = wgpuInstanceWaitAny(Get(), futureCount, reinterpret_cast<WGPUFutureWaitInfo * >(futures), timeoutNS);
+        return static_cast<WaitStatus>(result);
     }
     void Instance::WGPUReference(WGPUInstance handle) {
         if (handle != nullptr) {
@@ -2518,13 +3160,19 @@ namespace wgpu {
     void Queue::CopyTextureForBrowser(ImageCopyTexture const * source, ImageCopyTexture const * destination, Extent3D const * copySize, CopyTextureForBrowserOptions const * options) const {
         wgpuQueueCopyTextureForBrowser(Get(), reinterpret_cast<WGPUImageCopyTexture const * >(source), reinterpret_cast<WGPUImageCopyTexture const * >(destination), reinterpret_cast<WGPUExtent3D const * >(copySize), reinterpret_cast<WGPUCopyTextureForBrowserOptions const * >(options));
     }
-    void Queue::OnSubmittedWorkDone(uint64_t signalValue, QueueWorkDoneCallback callback, void * userdata) const {
-        wgpuQueueOnSubmittedWorkDone(Get(), signalValue, callback, reinterpret_cast<void * >(userdata));
+    void Queue::OnSubmittedWorkDone(QueueWorkDoneCallback callback, void * userdata) const {
+        wgpuQueueOnSubmittedWorkDone(Get(), callback, userdata);
+    }
+    Future Queue::OnSubmittedWorkDoneF(QueueWorkDoneCallbackInfo callbackInfo) const {
+        auto result = wgpuQueueOnSubmittedWorkDoneF(Get(), *reinterpret_cast<WGPUQueueWorkDoneCallbackInfo const*>(&callbackInfo));
+        return Future {
+            result.id
+        };
     }
     void Queue::SetLabel(char const * label) const {
         wgpuQueueSetLabel(Get(), reinterpret_cast<char const * >(label));
     }
-    void Queue::Submit(uint32_t commandCount, CommandBuffer const * commands) const {
+    void Queue::Submit(size_t commandCount, CommandBuffer const * commands) const {
         wgpuQueueSubmit(Get(), commandCount, reinterpret_cast<WGPUCommandBuffer const * >(commands));
     }
     void Queue::WriteBuffer(Buffer const& buffer, uint64_t bufferOffset, void const * data, size_t size) const {
@@ -2549,6 +3197,9 @@ namespace wgpu {
     static_assert(sizeof(RenderBundle) == sizeof(WGPURenderBundle), "sizeof mismatch for RenderBundle");
     static_assert(alignof(RenderBundle) == alignof(WGPURenderBundle), "alignof mismatch for RenderBundle");
 
+    void RenderBundle::SetLabel(char const * label) const {
+        wgpuRenderBundleSetLabel(Get(), reinterpret_cast<char const * >(label));
+    }
     void RenderBundle::WGPUReference(WGPURenderBundle handle) {
         if (handle != nullptr) {
             wgpuRenderBundleReference(handle);
@@ -2590,7 +3241,7 @@ namespace wgpu {
     void RenderBundleEncoder::PushDebugGroup(char const * groupLabel) const {
         wgpuRenderBundleEncoderPushDebugGroup(Get(), reinterpret_cast<char const * >(groupLabel));
     }
-    void RenderBundleEncoder::SetBindGroup(uint32_t groupIndex, BindGroup const& group, uint32_t dynamicOffsetCount, uint32_t const * dynamicOffsets) const {
+    void RenderBundleEncoder::SetBindGroup(uint32_t groupIndex, BindGroup const& group, size_t dynamicOffsetCount, uint32_t const * dynamicOffsets) const {
         wgpuRenderBundleEncoderSetBindGroup(Get(), groupIndex, group.Get(), dynamicOffsetCount, reinterpret_cast<uint32_t const * >(dynamicOffsets));
     }
     void RenderBundleEncoder::SetIndexBuffer(Buffer const& buffer, IndexFormat format, uint64_t offset, uint64_t size) const {
@@ -2642,11 +3293,14 @@ namespace wgpu {
     void RenderPassEncoder::EndOcclusionQuery() const {
         wgpuRenderPassEncoderEndOcclusionQuery(Get());
     }
-    void RenderPassEncoder::ExecuteBundles(uint32_t bundleCount, RenderBundle const * bundles) const {
+    void RenderPassEncoder::ExecuteBundles(size_t bundleCount, RenderBundle const * bundles) const {
         wgpuRenderPassEncoderExecuteBundles(Get(), bundleCount, reinterpret_cast<WGPURenderBundle const * >(bundles));
     }
     void RenderPassEncoder::InsertDebugMarker(char const * markerLabel) const {
         wgpuRenderPassEncoderInsertDebugMarker(Get(), reinterpret_cast<char const * >(markerLabel));
+    }
+    void RenderPassEncoder::PixelLocalStorageBarrier() const {
+        wgpuRenderPassEncoderPixelLocalStorageBarrier(Get());
     }
     void RenderPassEncoder::PopDebugGroup() const {
         wgpuRenderPassEncoderPopDebugGroup(Get());
@@ -2654,7 +3308,7 @@ namespace wgpu {
     void RenderPassEncoder::PushDebugGroup(char const * groupLabel) const {
         wgpuRenderPassEncoderPushDebugGroup(Get(), reinterpret_cast<char const * >(groupLabel));
     }
-    void RenderPassEncoder::SetBindGroup(uint32_t groupIndex, BindGroup const& group, uint32_t dynamicOffsetCount, uint32_t const * dynamicOffsets) const {
+    void RenderPassEncoder::SetBindGroup(uint32_t groupIndex, BindGroup const& group, size_t dynamicOffsetCount, uint32_t const * dynamicOffsets) const {
         wgpuRenderPassEncoderSetBindGroup(Get(), groupIndex, group.Get(), dynamicOffsetCount, reinterpret_cast<uint32_t const * >(dynamicOffsets));
     }
     void RenderPassEncoder::SetBlendConstant(Color const * color) const {
@@ -2743,7 +3397,7 @@ namespace wgpu {
     static_assert(alignof(ShaderModule) == alignof(WGPUShaderModule), "alignof mismatch for ShaderModule");
 
     void ShaderModule::GetCompilationInfo(CompilationInfoCallback callback, void * userdata) const {
-        wgpuShaderModuleGetCompilationInfo(Get(), callback, reinterpret_cast<void * >(userdata));
+        wgpuShaderModuleGetCompilationInfo(Get(), callback, userdata);
     }
     void ShaderModule::SetLabel(char const * label) const {
         wgpuShaderModuleSetLabel(Get(), reinterpret_cast<char const * >(label));
@@ -2756,6 +3410,60 @@ namespace wgpu {
     void ShaderModule::WGPURelease(WGPUShaderModule handle) {
         if (handle != nullptr) {
             wgpuShaderModuleRelease(handle);
+        }
+    }
+
+    // SharedFence
+
+    static_assert(sizeof(SharedFence) == sizeof(WGPUSharedFence), "sizeof mismatch for SharedFence");
+    static_assert(alignof(SharedFence) == alignof(WGPUSharedFence), "alignof mismatch for SharedFence");
+
+    void SharedFence::ExportInfo(SharedFenceExportInfo * info) const {
+        wgpuSharedFenceExportInfo(Get(), reinterpret_cast<WGPUSharedFenceExportInfo * >(info));
+    }
+    void SharedFence::WGPUReference(WGPUSharedFence handle) {
+        if (handle != nullptr) {
+            wgpuSharedFenceReference(handle);
+        }
+    }
+    void SharedFence::WGPURelease(WGPUSharedFence handle) {
+        if (handle != nullptr) {
+            wgpuSharedFenceRelease(handle);
+        }
+    }
+
+    // SharedTextureMemory
+
+    static_assert(sizeof(SharedTextureMemory) == sizeof(WGPUSharedTextureMemory), "sizeof mismatch for SharedTextureMemory");
+    static_assert(alignof(SharedTextureMemory) == alignof(WGPUSharedTextureMemory), "alignof mismatch for SharedTextureMemory");
+
+    Bool SharedTextureMemory::BeginAccess(Texture const& texture, SharedTextureMemoryBeginAccessDescriptor const * descriptor) const {
+        auto result = wgpuSharedTextureMemoryBeginAccess(Get(), texture.Get(), reinterpret_cast<WGPUSharedTextureMemoryBeginAccessDescriptor const * >(descriptor));
+        return result;
+    }
+    Texture SharedTextureMemory::CreateTexture(TextureDescriptor const * descriptor) const {
+        auto result = wgpuSharedTextureMemoryCreateTexture(Get(), reinterpret_cast<WGPUTextureDescriptor const * >(descriptor));
+        return Texture::Acquire(result);
+    }
+    Bool SharedTextureMemory::EndAccess(Texture const& texture, SharedTextureMemoryEndAccessState * descriptor) const {
+        *descriptor = SharedTextureMemoryEndAccessState();
+        auto result = wgpuSharedTextureMemoryEndAccess(Get(), texture.Get(), reinterpret_cast<WGPUSharedTextureMemoryEndAccessState * >(descriptor));
+        return result;
+    }
+    void SharedTextureMemory::GetProperties(SharedTextureMemoryProperties * properties) const {
+        wgpuSharedTextureMemoryGetProperties(Get(), reinterpret_cast<WGPUSharedTextureMemoryProperties * >(properties));
+    }
+    void SharedTextureMemory::SetLabel(char const * label) const {
+        wgpuSharedTextureMemorySetLabel(Get(), reinterpret_cast<char const * >(label));
+    }
+    void SharedTextureMemory::WGPUReference(WGPUSharedTextureMemory handle) {
+        if (handle != nullptr) {
+            wgpuSharedTextureMemoryReference(handle);
+        }
+    }
+    void SharedTextureMemory::WGPURelease(WGPUSharedTextureMemory handle) {
+        if (handle != nullptr) {
+            wgpuSharedTextureMemoryRelease(handle);
         }
     }
 
@@ -2780,6 +3488,10 @@ namespace wgpu {
     static_assert(sizeof(SwapChain) == sizeof(WGPUSwapChain), "sizeof mismatch for SwapChain");
     static_assert(alignof(SwapChain) == alignof(WGPUSwapChain), "alignof mismatch for SwapChain");
 
+    Texture SwapChain::GetCurrentTexture() const {
+        auto result = wgpuSwapChainGetCurrentTexture(Get());
+        return Texture::Acquire(result);
+    }
     TextureView SwapChain::GetCurrentTextureView() const {
         auto result = wgpuSwapChainGetCurrentTextureView(Get());
         return TextureView::Acquire(result);
@@ -2880,6 +3592,10 @@ namespace wgpu {
     Instance CreateInstance(InstanceDescriptor const * descriptor) {
         auto result = wgpuCreateInstance(reinterpret_cast<WGPUInstanceDescriptor const * >(descriptor));
         return Instance::Acquire(result);
+    }
+    Bool GetInstanceFeatures(InstanceFeatures * features) {
+        auto result = wgpuGetInstanceFeatures(reinterpret_cast<WGPUInstanceFeatures * >(features));
+        return result;
     }
     Proc GetProcAddress(Device device, char const * procName) {
         auto result = wgpuGetProcAddress(device.Get(), reinterpret_cast<char const * >(procName));

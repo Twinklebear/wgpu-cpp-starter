@@ -1,11 +1,8 @@
 #include <array>
-#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
-#include <thread>
-#include <vector>
 #include "arcball_camera.h"
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
@@ -70,11 +67,10 @@ fn fragment_main(in: VertexOutput) -> @location(0) float4 {
 )";
 
 #ifndef __EMSCRIPTEN__
-dawn_native::Adapter request_adapter(dawn_native::Instance &instance,
-                                     const wgpu::BackendType backend_type)
+dawn::native::Adapter request_adapter(dawn::native::Instance &instance,
+                                      const wgpu::BackendType backend_type)
 {
-    instance.DiscoverDefaultAdapters();
-    std::vector<dawn_native::Adapter> adapters = instance.GetAdapters();
+    std::vector<dawn::native::Adapter> adapters = instance.EnumerateAdapters();
     for (const auto &a : adapters) {
         wgpu::AdapterProperties props;
         a.GetProperties(&props);
@@ -122,10 +118,12 @@ int main(int argc, const char **argv)
     AppState *app_state = new AppState;
 
 #ifdef __EMSCRIPTEN__
-    wgpu::Instance instance;
     app_state->device = wgpu::Device::Acquire(emscripten_webgpu_get_device());
+
+    wgpu::InstanceDescriptor instance_desc;
+    wgpu::Instance instance = wgpu::CreateInstance(&instance_desc);
 #else
-    dawn_native::Instance dawn_instance;
+    dawn::native::Instance dawn_instance;
 
 #if defined(_WIN32)
     const auto backend_type = wgpu::BackendType::D3D12;
@@ -136,7 +134,7 @@ int main(int argc, const char **argv)
 #endif
 
     auto adapter = request_adapter(dawn_instance, backend_type);
-    DawnProcTable procs(dawn_native::GetProcs());
+    DawnProcTable procs(dawn::native::GetProcs());
     dawnProcSetProcs(&procs);
 
     wgpu::Instance instance = dawn_instance.Get();
@@ -157,11 +155,13 @@ int main(int argc, const char **argv)
         },
         nullptr);
 
+    /*
     app_state->device.SetLoggingCallback(
         [](WGPULoggingType type, const char *msg, void *data) {
             std::cout << "WebGPU Log: " << msg << "\n" << std::flush;
         },
         nullptr);
+        */
 
     app_state->queue = app_state->device.GetQueue();
 
@@ -218,13 +218,15 @@ int main(int argc, const char **argv)
     wgpu::ShaderModule shader_module;
     {
         wgpu::ShaderModuleWGSLDescriptor shader_module_wgsl;
-        shader_module_wgsl.source = WGSL_SHADER.c_str();
+        shader_module_wgsl.code = WGSL_SHADER.c_str();
 
         wgpu::ShaderModuleDescriptor shader_module_desc;
         shader_module_desc.nextInChain = &shader_module_wgsl;
         shader_module = app_state->device.CreateShaderModule(&shader_module_desc);
 
         // TODO: Status always seems to be success even when there are errors?
+        // Unimplemented on Emscripten? Did the name change?
+        /*
         shader_module.GetCompilationInfo(
             [](WGPUCompilationInfoRequestStatus status,
                WGPUCompilationInfo const *info,
@@ -256,6 +258,7 @@ int main(int argc, const char **argv)
                 }
             },
             nullptr);
+            */
     }
 
     // Upload vertex data
@@ -324,24 +327,13 @@ int main(int argc, const char **argv)
     wgpu::PipelineLayout pipeline_layout =
         app_state->device.CreatePipelineLayout(&pipeline_layout_desc);
 
-#ifndef __EMSCRIPTEN__
     wgpu::RenderPipelineDescriptor render_pipeline_desc;
-#else
-    // Emscripten is behind Dawn
-    wgpu::RenderPipelineDescriptor2 render_pipeline_desc;
-#endif
     render_pipeline_desc.vertex = vertex_state;
     render_pipeline_desc.fragment = &fragment_state;
     render_pipeline_desc.layout = pipeline_layout;
     // Default primitive state is what we want, triangle list, no indices
 
-#ifndef __EMSCRIPTEN__
     app_state->render_pipeline = app_state->device.CreateRenderPipeline(&render_pipeline_desc);
-#else
-    // Emscripten is behind Dawn
-    app_state->render_pipeline =
-        app_state->device.CreateRenderPipeline2(&render_pipeline_desc);
-#endif
 
     // Create the UBO for our bind group
     wgpu::BufferDescriptor ubo_buffer_desc;
