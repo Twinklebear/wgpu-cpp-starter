@@ -1,3 +1,7 @@
+# Archived/Deprecated
+See my updated template repo: https://github.com/Twinklebear/webgpu-cpp-wasm which builds
+native + wasm SDL2 + WebGPU apps.
+
 # WebGPU C++ Starter Project
 
 A starter code for cross-platform (i.e., web & native) C++ WebGPU projects.
